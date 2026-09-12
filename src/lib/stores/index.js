@@ -1,0 +1,17 @@
+import { writable } from 'svelte/store';
+export const topZ = writable(1);
+export const windowList = writable([]);
+export const minimizedSig = writable([]);
+export const activeSignal = writable(null);
+export const focusWindowTop = writable(null);
+export const activeTab = writable(null);
+export const slotsDragged = writable(null);
+export const draggedOverRight = writable(null);
+export const draggedOverLeft = writable(null);
+export const isTabDragging = writable(null);
+export const deleteTab = writable(null);
+export const tabID = writable(null);
+export const reloadSignal = writable(null);
+export const goBackSignal = writable(null);
+export const goForwardSignal = writable(null);
+export const notif = writable(null);

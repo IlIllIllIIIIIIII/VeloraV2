@@ -1,0 +1,13 @@
+.gcloudignore
+.git
+.github
+.claude
+.vscode
+node_modules
+.svelte-kit
+build
+.env
+.env.*
+*.log
+.DS_Store
+readme
