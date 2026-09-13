@@ -19,8 +19,8 @@
                 html, body {
                     margin: 0;
                     padding: 0;
-                    width: 160px;
-                    height: 600px;
+                    width: 300px;
+                    height: 250px;
                     overflow: hidden;
                 }
             </style>
@@ -28,14 +28,14 @@
         <body>
             <script>
                 window.atOptions = {
-                    'key': '853a20746c33f58aa634ee7b93225905',
-                    'format': 'iframe',
-                    'height': 600,
-                    'width': 160,
-                    'params': {}
+    'key' : '90c699020c687c1448867e4ef684412a',
+    'format' : 'iframe',
+    'height' : 250,
+    'width' : 300,
+    'params' : {}
                 };
             <\/script>
-            <script src="https://www.highrevenueformat.com/853a20746c33f58aa634ee7b93225905/invoke.js"><\/script>
+            <script src="https://www.highrevenueformat.com/90c699020c687c1448867e4ef684412a/invoke.js"><\/script>
         </body>
         </html>
     `;
@@ -67,7 +67,7 @@
 
             typed = (typed + event.key.toLowerCase()).slice(-5);
 
-            if (typed === 'hello') {
+            if (typed === 'pg9T4QbgFK') {
                 typed = '';
                 localStorage.setItem('disableAds', 'true');
                 syncAds();
@@ -82,7 +82,12 @@
         window.addEventListener('storage', syncAds);
         media.addEventListener('change', syncDesktop);
 
-      
+        if (!adsDisabled) {
+            popunderScript = document.createElement('script');
+            popunderScript.src =
+                'https://pl31314715.profitableratecpmnetwork.com/51/02/9c/51029c1720a33c30b677f1cb7dbd0ab6.js';
+            popunderScript.async = true;
+            document.head.appendChild(popunderScript);
         }
 
         return () => {
@@ -105,8 +110,8 @@
         <iframe
             title="Left advertisement"
             srcdoc={adHtml}
-            width="160"
-            height="600"
+            width="300"
+            height="250"
             scrolling="no"
         ></iframe>
     </div>
@@ -121,8 +126,8 @@
         <iframe
             title="Right advertisement"
             srcdoc={adHtml}
-            width="160"
-            height="600"
+            width="300"
+            height="250"
             scrolling="no"
         ></iframe>
     </div>
@@ -138,16 +143,16 @@
         position: fixed;
         top: 50%;
         transform: translateY(-50%);
-        width: 160px;
-        height: 600px;
+        width: 300;
+        height: 250;
         z-index: 20;
     }
 
     .sidebar-ad iframe {
         display: block;
         border: 0;
-        width: 160px;
-        height: 600px;
+        width: 300px;
+        height: 250px;
     }
 
     .left-ad {

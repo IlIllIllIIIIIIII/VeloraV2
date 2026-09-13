@@ -1,12 +1,23 @@
 FROM oven/bun:1.4.2 AS base
 WORKDIR /app
 
-FROM base AS build
+FROM node:22-bookworm-slim AS build
+WORKDIR /app
+COPY --from=base /usr/local/bin/bun /usr/local/bin/bun
 COPY package.json bun.lock ./
 COPY patches ./patches
 RUN bun install --frozen-lockfile --ignore-scripts
 COPY . .
-RUN bun --bun run build
+RUN node node_modules/@sveltejs/kit/svelte-kit.js sync
+RUN set -eu; \
+    if [ -d static/books ]; then \
+        mv static/books /tmp/velora-books; \
+    fi; \
+    node node_modules/vite/bin/vite.js build; \
+    if [ -d /tmp/velora-books ]; then \
+        mkdir -p build/client; \
+        mv /tmp/velora-books build/client/books; \
+    fi
 
 FROM base AS production-dependencies
 COPY package.json bun.lock ./
