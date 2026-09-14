@@ -450,6 +450,17 @@
 		}
 	}
 
+	async function openHomeShortcut(url) {
+		if (!ready) return;
+		if (!activeFrame) { addTab(); await tick(); }
+		try { await navigateTo(url); }
+		catch {
+			await openPalette();
+			query = url;
+			paletteError = 'Could not open this page. Check your connection settings and try again.';
+		}
+	}
+
 	function handleShortcut(event) {
 		if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === 'l') {
 			event.preventDefault();
@@ -628,11 +639,11 @@
 				/>
 				{#if frame.id === $activeTab && !frame.url}<Home
 						{ready}
-						onsearch={() => openPalette(true)}
+						onsearch={() => openPalette(true)} onopen={openHomeShortcut}
 					/>{/if}
 			</div>
 		{/each}
-		{#if !tabs.length}<Home {ready} onsearch={() => openPalette(true)} />{/if}
+		{#if !tabs.length}<Home {ready} onsearch={() => openPalette(true)} onopen={openHomeShortcut} />{/if}
 	</main>
 
 	{#if paletteOpen}
