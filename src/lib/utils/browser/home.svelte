@@ -1,6 +1,13 @@
 <script>
 	import Icon from './icon.svelte';
-	let { ready = false, onsearch } = $props();
+	let { ready = false, onsearch, onopen } = $props();
+	let launching = $state(false);
+	async function launchGeForce() {
+		if (!ready || !onopen || launching) return;
+		launching = true;
+		try { await onopen('https://play.geforcenow.com/'); }
+		finally { launching = false; }
+	}
 </script>
 
 <section class="zen-home" aria-label="New tab">
@@ -9,6 +16,9 @@
 		<button class="zen-home-search" onclick={() => onsearch('')}
 			><Icon name="search" size={16} /><span>Search or enter a URL</span></button
 		>
+		<button class="geforce-shortcut" type="button" onclick={launchGeForce} disabled={!ready || !onopen || launching} aria-label="Open GeForce NOW in Velora" aria-busy={launching}>
+			<Icon name="games" size={18} /><span>{launching ? 'Opening…' : 'GeForce NOW'}</span>
+		</button>
 		{#if !ready}<p role="status">Starting browser…</p>{/if}
 	</div>
 </section>
@@ -86,8 +96,17 @@
 		font: 400 12px var(--zen-font);
 		color: #604c36;
 	}
+	.geforce-shortcut {
+		display: flex; align-items: center; justify-content: center; gap: 9px;
+		margin: 16px auto 0; padding: 9px 12px; border: 1px solid rgba(96, 76, 54, .15);
+		border-radius: 6px; background: rgba(255, 253, 248, .35); color: #493722;
+		font: 400 14px var(--zen-font); cursor: pointer; transition: background 180ms ease-out;
+	}
+	.geforce-shortcut:hover:not(:disabled) { background: rgba(255, 253, 248, .7); }
+	.geforce-shortcut:focus-visible { outline: 1px solid #685238; outline-offset: 3px; }
+	.geforce-shortcut:disabled { opacity: .5; cursor: default; }
 	@media (prefers-reduced-motion: reduce) {
-		.zen-home-search {
+		.zen-home-search, .geforce-shortcut {
 			transition: none;
 		}
 	}
