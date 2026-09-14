@@ -5,7 +5,7 @@
 	async function launchGeForce() {
 		if (!ready || !onopen || launching) return;
 		launching = true;
-		try { await onopen('https://play.geforcenow.com/'); }
+		try { await onopen('https://play.geforcenow.com/mall/'); }
 		finally { launching = false; }
 	}
 </script>
