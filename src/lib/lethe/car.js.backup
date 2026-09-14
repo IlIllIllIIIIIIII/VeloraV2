@@ -1,5 +1,15 @@
 export function getWispUrl(custom) {
-  return custom || 'wss://galaxy-861579890383.us-central1.run.app/lively/';
+	let protocol;
+	if (custom) {
+		return custom;
+	} else {
+		protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+		if (protocol === 'wss') {
+			return `${protocol}://${location.host}/lively/`;
+		} else {
+			return `${protocol}://${location.host}/lively/`;
+		}
+	}
 }
 
 export function createConnection() {
