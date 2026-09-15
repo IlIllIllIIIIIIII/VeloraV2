@@ -45,7 +45,6 @@
 
         const media = window.matchMedia('(min-width: 1201px)');
         let typed = '';
-        let socialBarScript = null;
 
         function syncDesktop() {
             desktop = media.matches;
@@ -55,10 +54,6 @@
             adsDisabled =
                 localStorage.getItem('disableAds') === 'true';
 
-            // Reload to clear listeners installed by the ad script.
-            if (adsDisabled && socialBarScript) {
-                window.location.reload();
-            }
         }
 
         function handleKeydown(event) {
@@ -82,19 +77,12 @@
         window.addEventListener('storage', syncAds);
         media.addEventListener('change', syncDesktop);
 
-        if (!adsDisabled) {
-            socialBarScript = document.createElement('script');
-            socialBarScript.src =
-                'https://pl31361928.profitableratecpmnetwork.com/be/1f/ee/be1fee4c7a0955af2c30f2392d6278f1.js';
-            document.body.appendChild(socialBarScript);
-        }
 
         return () => {
             window.removeEventListener('keydown', handleKeydown);
             window.removeEventListener('ads-disabled', syncAds);
             window.removeEventListener('storage', syncAds);
             media.removeEventListener('change', syncDesktop);
-            socialBarScript?.remove();
         };
     });
 </script>
