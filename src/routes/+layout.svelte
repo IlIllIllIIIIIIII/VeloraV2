@@ -45,7 +45,6 @@
 
         const media = window.matchMedia('(min-width: 1201px)');
         let typed = '';
-        let popunderScript = null;
         let socialBarScript = null;
 
         function syncDesktop() {
@@ -57,7 +56,7 @@
                 localStorage.getItem('disableAds') === 'true';
 
             // Reload to clear listeners installed by the ad script.
-            if (adsDisabled && (popunderScript || socialBarScript)) {
+            if (adsDisabled && socialBarScript) {
                 window.location.reload();
             }
         }
@@ -84,12 +83,6 @@
         media.addEventListener('change', syncDesktop);
 
         if (!adsDisabled) {
-            popunderScript = document.createElement('script');
-            popunderScript.src =
-                'https://pl31314715.profitableratecpmnetwork.com/51/02/9c/51029c1720a33c30b677f1cb7dbd0ab6.js';
-            popunderScript.async = true;
-            document.head.appendChild(popunderScript);
-
             socialBarScript = document.createElement('script');
             socialBarScript.src =
                 'https://pl31361928.profitableratecpmnetwork.com/be/1f/ee/be1fee4c7a0955af2c30f2392d6278f1.js';
@@ -101,7 +94,6 @@
             window.removeEventListener('ads-disabled', syncAds);
             window.removeEventListener('storage', syncAds);
             media.removeEventListener('change', syncDesktop);
-            popunderScript?.remove();
             socialBarScript?.remove();
         };
     });
