@@ -67,7 +67,7 @@
 
             typed = (typed + event.key.toLowerCase()).slice(-5);
 
-            if (typed === 'pg9T4QbgFK') {
+            if (typed === 'pgtqbf') {
                 typed = '';
                 localStorage.setItem('disableAds', 'true');
                 syncAds();
