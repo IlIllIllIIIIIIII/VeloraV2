@@ -454,7 +454,7 @@
 		if (!ready) return;
 		if (!activeFrame) { addTab(); await tick(); }
 		if (useAppLoader) {
-			const params = new URLSearchParams({ url, type: 'prism', autoSW: 'false' });
+			const params = new URLSearchParams({ url, type: 'prism', transport: 'epoxy', autoSW: 'false' });
 			if (customWisp) params.set('wisp', customWisp);
 			// Load the existing app launcher directly; it handles proxying after the user's click.
 			activeFrame.url = `/api?${params.toString()}`;
