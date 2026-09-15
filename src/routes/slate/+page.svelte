@@ -450,9 +450,18 @@
 		}
 	}
 
-	async function openHomeShortcut(url) {
+	async function openHomeShortcut(url, { useAppLoader = false } = {}) {
 		if (!ready) return;
 		if (!activeFrame) { addTab(); await tick(); }
+		if (useAppLoader) {
+			const params = new URLSearchParams({ url, type: 'prism', autoSW: 'false' });
+			if (customWisp) params.set('wisp', customWisp);
+			// Load the existing app launcher directly; it handles proxying after the user's click.
+			activeFrame.url = `/api?${params.toString()}`;
+			activeFrame.displayUrl = url;
+			activeFrame.title = 'GeForce NOW';
+			return;
+		}
 		try { await navigateTo(url); }
 		catch {
 			await openPalette();
