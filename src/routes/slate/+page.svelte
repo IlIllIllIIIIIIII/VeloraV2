@@ -1,5 +1,4 @@
 <script>
-	import { launchNavigationAd } from '$lib/utils/ads.js';
 	import '$lib/style/browser.css';
 	import Tab from '$lib/utils/browser/tab.svelte';
 	import Iframe from '$lib/utils/browser/iframe.svelte';
@@ -236,8 +235,6 @@
 		bookmarks.splice(index, 1);
 	}
 	async function bookmarkSearch(url, lethe) {
-		if (!ready || !activeFrame) return;
-		launchNavigationAd();
 		let encoded;
 		if (lethe === 'sj2') {
 			await ensurePrism();
@@ -434,7 +431,6 @@
 	async function submitPalette(event) {
 		event.preventDefault();
 		if (!ready || !query.trim() || paletteBusy) return;
-		launchNavigationAd();
 		paletteBusy = true;
 		const target = query.trim();
 		paletteError = '';
@@ -456,7 +452,6 @@
 
 	async function openHomeShortcut(url, { useAppLoader = false } = {}) {
 		if (!ready) return;
-		launchNavigationAd();
 		if (!activeFrame) { addTab(); await tick(); }
 		if (useAppLoader) {
 			const params = new URLSearchParams({ url, type: 'prism', transport: 'epoxy', autoSW: 'false' });
