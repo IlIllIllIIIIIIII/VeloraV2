@@ -1,23 +1,9 @@
 <script>
-    import Browser from './slate/+page.svelte';
-    import { onMount } from 'svelte';
-    import { launchAds } from '$lib/utils/ads.js';
-
-    onMount(() => {
-        document.addEventListener('mousedown', launchAds);
-
-        return () => {
-            document.removeEventListener('mousedown', launchAds);
-        };
-    });
+	import Desktop from './os/+page.svelte';
 </script>
 
 <svelte:head>
-    <title>Velora — New tab</title>
-    <meta
-        name="description"
-        content="Your Velora browser. Search, browse, and play in one place."
-    />
+	<meta name="description" content="Your Velora desktop. Browse, play, and make it your own." />
 </svelte:head>
 
-<Browser />
+<Desktop />
