@@ -10,8 +10,9 @@
 	];
 
 	const credits = [
-		{ label: 'Disc', labeltwo: 'ord Server', url: 'https://tinyurl.com/galaxyiscool' },
-		{ label: 'Scra', labeltwo: 'mjet', url: 'https://discord.gg/qrZnbQuVs' },
+		{ label: 'Disc', labeltwo: 'ord Server', url: 'https://discord.gg/qrZnbQuVs'
+		 },
+		{ label: 'Scra', labeltwo: 'mjet', url: 'https://tinyurl.com/galaxyiscool' },
 		{
 			label: 'Ultra',
 			labeltwo: 'violet',
