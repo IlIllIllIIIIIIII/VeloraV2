@@ -1,364 +1,594 @@
-.background {
-	transition: all 0.3s;
-}
-body {
-	height: 100%;
-	width: 100vw;
-	margin: 0px;
-	padding: 0px;
-	overflow: hidden;
-	animation: brighten 0.3s ease-in forwards;
-}
-.topNav {
-	position: absolute;
-	top: 0px;
-	width: 100%;
-	backdrop-filter: blur(10px);
-	background-color: var(--color-glass);
-	height: 25px;
-	display: flex;
-	align-items: center;
-	padding: 0 10px 0 0px;
-	box-sizing: border-box;
-}
-.topNavText {
-	font-size: 15px;
-	padding: 3px 5px;
-	border-radius: 3px;
-}
-.topNavText:hover {
-	background-color: var(--overlay-hover-strong);
-	cursor: pointer;
-}
-.topRight {
-	margin-left: auto;
-	display: flex;
-	flex-direction: row;
-	width: auto;
-	gap: 10px;
-	height: 25px;
-	text-align: center;
-	align-items: center;
-}
-.topButton {
-	height: 25px;
-	border-radius: 4px;
-}
-.topButton img {
-	height: 100%;
-}
-.topButton:hover {
-	background-color: var(--overlay-hover);
-}
-
-.nav {
-	position: absolute;
-	bottom: 0px;
-	backdrop-filter: blur(20px);
-	background-color: var(--color-glass);
-	display: flex;
-	flex-direction: column;
-	width: 100%;
-}
-.navResize {
-	position: absolute;
-	margin-bottom: auto;
-	width: 100%;
-	height: 2.5px;
-	cursor: ns-resize;
-}
-
-.navStuff {
-	width: 100%;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 8px;
-}
-.background {
-	height: 100vh;
-	width: 100vw;
-	z-index: -1;
-	overflow: hidden;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-position: center center;
-}
-
-.navButton {
-	opacity: 0;
-	position: relative;
-	height: 80%;
-	aspect-ratio: 1 / 1;
-	border-radius: 8px;
-	overflow: hidden;
-	background: none;
-	border: none;
-	padding: 0;
-	filter: brightness(0.85);
-}
-.navButton:hover {
-	background-color: var(--overlay-hover-strong);
-}
-.navButton.active {
-	background-color: var(--overlay-hover);
-}
-.navButton.hasMinimized::after {
-	content: '';
-	position: absolute;
-	bottom: -2px;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 7px;
-	height: 5px;
-	border-radius: 2px;
-	background-color: var(--overlay-indicator);
-}
-.navIcon {
-	height: 75%;
-	width: auto;
-	transition-duration: 0.15s;
-	margin-top: 3px;
-}
-.navButton:active .navIcon {
-	transform: scale(0.8);
-}
-.contextMenu {
-	position: fixed;
-	width: 150px;
-	background: var(--color-surface-3);
-	border: 1px solid var(--color-border);
-	border-radius: 8px;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-	z-index: 99999;
-	padding: 4px 0;
-	bottom: 40px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-}
-.menuOption {
-	width: 100%;
-	height: 32px;
-	padding: 0 12px;
-	align-items: center;
-	cursor: pointer;
-	font-size: 13px;
-	white-space: nowrap;
-	border: none;
-	text-align: center;
-	color: var(--color-white);
-	background: none;
-}
-
-.menuOption:hover {
-	background: var(--overlay-hover);
-}
-.menuOption.danger {
-	color: var(--color-danger);
-}
-.menuOption.danger:hover {
-	background: var(--color-danger-hover);
-	color: var(--color-white);
-}
-
-.modalOverlay {
+.velora-desktop {
+	--os-text: #f1f0ec;
+	--os-muted: #c2c3c6;
+	--os-accent: #d6c5a5;
+	--os-border: rgba(255, 255, 255, 0.13);
 	position: fixed;
 	inset: 0;
-	z-index: 100000;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: var(--color-scrim-medium);
-	backdrop-filter: blur(6px);
+	overflow: hidden;
+	isolation: isolate;
+	background: #161a20;
+	color: var(--os-text);
+	font-family:
+		Inter,
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		sans-serif;
+	font-size: 13px;
 }
-.modal {
-	width: 360px;
-	max-width: 90vw;
-	max-height: 80vh;
-	overflow-y: auto;
+.velora-desktop * {
 	box-sizing: border-box;
-	padding: 18px;
-	display: flex;
-	flex-direction: column;
-	gap: 6px;
-	background: var(--color-surface-3);
-	border: 1px solid var(--color-border);
-	border-radius: 12px;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-	color: var(--color-text);
 }
-.modalTitle {
-	margin: 0 0 6px 0;
-	font-family: var(--font-family-heading);
-	font-size: 18px;
-	color: var(--color-text);
+.velora-desktop button,
+.velora-desktop input {
+	font: inherit;
 }
-.modalLabel {
-	margin: 6px 0 0 2px;
-	font-size: 12px;
-	color: var(--color-text-muted);
-}
-.modalInput {
-	padding: 8px 12px;
-	color: var(--color-text);
-	background: var(--color-surface);
-	border: 1px solid var(--color-border);
-	border-radius: 8px;
-	font-family: var(--font-family-body);
-	font-size: 13px;
-	transition: all 0.2s ease;
-	max-width: 322px;
-}
-.modalInput::placeholder {
-	color: var(--color-text-subtle);
-}
-.modalInput:focus {
-	outline: none;
-	background: var(--color-surface-2);
-	border-color: var(--color-border-hover);
-}
-.modalOptions {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-	margin-top: 2px;
-}
-.modalOption {
-	padding: 5px 14px;
-	color: var(--color-text-muted);
-	background: transparent;
-	border: 1px solid var(--color-border-strong);
-	border-radius: 20px;
-	font-family: var(--font-family-heading);
-	font-size: 12px;
-	font-weight: 900;
+.velora-desktop button {
+	color: inherit;
 	cursor: pointer;
-	transition: all 0.15s ease;
 }
-.modalOption:hover {
-	border-color: var(--color-border-hover);
-	color: var(--color-text);
+.velora-desktop button:disabled {
+	opacity: 0.45;
+	cursor: wait;
 }
-.modalOption.active {
-	background: var(--color-pin);
-	border-color: var(--color-pin);
-	color: var(--color-text-dark);
+.velora-desktop button:focus-visible,
+.velora-desktop a:focus-visible,
+.velora-desktop input:focus-visible {
+	outline: 2px solid var(--os-accent);
+	outline-offset: 3px;
 }
-.advancedToggle {
+.velora-desktop .desktop-wallpaper {
+	position: absolute;
+	inset: 0;
+	z-index: -2;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-color: #161a20;
+	transition: background-image 220ms ease-out;
+}
+.velora-desktop .desktop-shade {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background: linear-gradient(
+		180deg,
+		rgba(8, 12, 19, 0.22),
+		transparent 40%,
+		rgba(8, 12, 19, 0.38)
+	);
+}
+.velora-desktop .desktop-menubar {
+	height: 40px;
 	display: flex;
 	align-items: center;
-	gap: 8px;
-	width: fit-content;
-	margin-top: 10px;
-	padding: 4px 2px;
-	color: var(--color-text-muted);
-	background: none;
-	border: none;
-	font-family: var(--font-family-body);
-	font-size: 13px;
-	cursor: pointer;
-	transition: color 0.15s ease;
+	justify-content: space-between;
+	padding: 0 18px;
+	position: relative;
+	z-index: 10000;
+	background: rgba(17, 20, 25, 0.62);
+	backdrop-filter: blur(22px);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+	user-select: none;
 }
-.advancedToggle:hover {
-	color: var(--color-text);
+.velora-desktop .desktop-identity,
+.velora-desktop .desktop-status {
+	display: flex;
+	align-items: center;
+	gap: 18px;
 }
-.advancedArrow {
-	width: 0;
-	height: 0;
-	border-left: 5px solid currentColor;
-	border-top: 4px solid transparent;
-	border-bottom: 4px solid transparent;
-	transition: transform 0.15s ease;
+.velora-desktop .brand-button {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	border: 0;
+	background: transparent;
+	padding: 0;
+	font-weight: 600;
+	letter-spacing: -0.3px;
 }
-.advancedArrow.open {
-	transform: rotate(90deg);
+.velora-desktop .velora-mark {
+	font-family: Georgia, serif;
+	font-style: italic;
+	font-size: 26px;
+	line-height: 1;
+	color: #e4d5b9;
 }
-.advancedPanel {
+.velora-desktop .desktop-label {
+	border-left: 1px solid var(--os-border);
+	padding-left: 18px;
+	font-size: 11px;
+	color: #bebfc5;
+}
+.velora-desktop .browser-mode {
+	color: #d4d5d8;
+	text-decoration: none;
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	font-size: 11px;
+}
+.velora-desktop .desktop-status time {
+	font-size: 11px;
+	font-variant-numeric: tabular-nums;
+}
+.velora-desktop .menubar-icon {
+	width: 28px;
+	height: 28px;
+	display: grid;
+	place-items: center;
+	padding: 0;
+	border: 0;
+	border-radius: 6px;
+	background: transparent;
+}
+.velora-desktop .menubar-icon:hover {
+	background: rgba(255, 255, 255, 0.1);
+}
+.velora-desktop .desktop-workspace {
+	position: absolute;
+	inset: 40px 0 calc(var(--dock-height) + 32px);
+}
+.velora-desktop .desktop-shortcuts {
+	position: absolute;
+	top: 24px;
+	left: 24px;
+	display: grid;
+	grid-template-columns: repeat(2, 86px);
+	gap: 18px 10px;
+}
+.velora-desktop .desktop-shortcut {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
-	padding: 8px 12px 12px 12px;
-	background: var(--color-surface);
-	border: 1px solid var(--color-border);
-	border-radius: 8px;
-	max-width: 322px;
+	align-items: center;
+	gap: 9px;
+	border: 1px solid transparent;
+	background: transparent;
+	padding: 10px 4px;
+	border-radius: 10px;
+	font-size: 11px;
+	text-shadow: 0 1px 6px #111;
+	transition:
+		background 180ms ease-out,
+		transform 180ms ease-out;
 }
-.modalError {
-	margin: 8px 0 0 2px;
-	font-size: 12px;
-	color: var(--color-danger);
+.velora-desktop .desktop-shortcut:hover {
+	background: rgba(255, 255, 255, 0.09);
+	border-color: rgba(255, 255, 255, 0.08);
+	transform: translateY(-2px);
 }
-.modalActions {
-	display: flex;
-	justify-content: flex-end;
-	gap: 8px;
-	margin-top: 14px;
+.velora-desktop .shortcut-icon {
+	width: 49px;
+	height: 49px;
+	border-radius: 13px;
+	display: grid;
+	place-items: center;
+	background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05));
+	border: 1px solid rgba(255, 255, 255, 0.13);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+	backdrop-filter: blur(18px);
 }
-.modalBtn {
-	padding: 8px 18px;
-	color: var(--color-text-muted);
-	background: var(--overlay-hover);
-	border: none;
-	border-radius: 8px;
-	font-family: var(--font-family-heading);
-	font-size: 13px;
-	font-weight: 900;
-	cursor: pointer;
-	transition: all 0.15s ease;
+.velora-desktop .shortcut-icon img {
+	width: 29px;
+	height: 29px;
+	object-fit: contain;
 }
-.modalBtn:hover {
-	background: var(--overlay-hover-strong);
-	color: var(--color-text);
-}
-.modalBtn.primary {
-	background: var(--color-pin);
-	color: var(--color-text-dark);
-}
-.modalBtn.primary:hover {
-	background: var(--color-white);
-}
-
-.previewPanel {
-	position: fixed;
-	bottom: 60px;
+.velora-desktop .desktop-clock {
+	position: absolute;
+	top: 9%;
 	left: 50%;
 	transform: translateX(-50%);
-	display: flex;
-	flex-direction: row;
-	gap: 8px;
-	background: var(--color-surface-3);
-	border: 1px solid var(--color-border);
-	border-radius: 8px;
-	padding: 8px;
-	z-index: 99999;
+	text-align: center;
+	pointer-events: none;
+	white-space: nowrap;
+	color: rgba(255, 255, 255, 0.91);
+	text-shadow: 0 2px 24px rgba(0, 0, 0, 0.18);
 }
-
-.previewCard {
-	width: 120px;
-	height: 80px;
-	background: var(--overlay-hover);
-	border: 1px solid var(--color-border);
-	border-radius: 8px;
+.velora-desktop .desktop-clock p {
+	margin: 0 0 9px;
+	font-size: 13px;
+	font-weight: 400;
+	letter-spacing: 0.4px;
+}
+.velora-desktop .desktop-clock > span {
+	font-size: clamp(44px, 5.8vw, 86px);
+	font-weight: 250;
+	line-height: 1.1;
+	letter-spacing: -3px;
+	font-variant-numeric: tabular-nums;
+}
+.velora-desktop .desktop-signature {
+	position: absolute;
+	bottom: 25px;
+	left: 32px;
+	text-shadow: 0 2px 10px #161a2099;
+}
+.velora-desktop .desktop-signature > span {
+	font-size: 10px;
+	font-weight: 500;
+	letter-spacing: 3px;
+	color: #dfd6c5;
+}
+.velora-desktop .desktop-signature p {
+	font-size: 20px;
+	font-weight: 300;
+	margin: 9px 0 0;
+	letter-spacing: -0.5px;
+}
+.velora-desktop .personalize-button {
+	position: absolute;
+	right: 28px;
+	bottom: 28px;
 	display: flex;
 	align-items: center;
-	justify-content: center;
-	cursor: pointer;
-	color: var(--color-white);
+	gap: 8px;
+	padding: 10px 13px;
+	background: rgba(24, 28, 35, 0.46);
+	backdrop-filter: blur(20px);
+	border: 1px solid var(--os-border);
+	border-radius: 9px;
+	font-size: 11px;
+	transition: background 180ms ease-out;
+}
+.velora-desktop .personalize-button:hover {
+	background: rgba(50, 54, 61, 0.75);
+}
+.velora-desktop .desktop-dock {
+	position: absolute;
+	z-index: 10000;
+	bottom: 12px;
+	left: 50%;
+	transform: translateX(-50%);
+	height: var(--dock-height);
+	max-width: calc(100% - 24px);
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	padding: 7px 10px;
+	background: rgba(33, 36, 43, 0.69);
+	backdrop-filter: blur(30px) saturate(130%);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	border-radius: 17px;
+	box-shadow:
+		0 8px 32px rgba(0, 0, 0, 0.24),
+		inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.velora-desktop .navResize {
+	position: absolute;
+	left: 25%;
+	right: 25%;
+	top: -5px;
+	height: 7px;
+	cursor: ns-resize;
+}
+.velora-desktop .dock-apps {
+	display: flex;
+	height: 100%;
+	align-items: center;
+	gap: 5px;
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+.velora-desktop .dock-app,
+.velora-desktop .dock-launcher,
+.velora-desktop .dock-personalize {
+	position: relative;
+	height: calc(var(--dock-height) - 14px);
+	width: calc(var(--dock-height) - 14px);
+	flex: 0 0 auto;
+	display: grid;
+	place-items: center;
+	border: 1px solid transparent;
+	background: transparent;
+	border-radius: 11px;
+	padding: 10px;
+	transition:
+		background 180ms ease-out,
+		transform 180ms ease-out;
+}
+.velora-desktop .dock-app:hover,
+.velora-desktop .dock-launcher:hover,
+.velora-desktop .dock-personalize:hover {
+	background: rgba(255, 255, 255, 0.12);
+	transform: translateY(-3px);
+}
+.velora-desktop .dock-app.active,
+.velora-desktop .dock-launcher.active {
+	background: rgba(255, 255, 255, 0.11);
+	border-color: rgba(255, 255, 255, 0.07);
+}
+.velora-desktop .dock-app img {
+	width: 100%;
+	height: 100%;
+	max-width: 34px;
+	max-height: 34px;
+	object-fit: contain;
+}
+.velora-desktop .dock-indicator {
+	position: absolute;
+	bottom: 1px;
+	width: 4px;
+	height: 3px;
+	border-radius: 2px;
+	background: transparent;
+	transition: width 180ms ease-out;
+}
+.velora-desktop .dock-app.running .dock-indicator {
+	background: #a4a5aa;
+}
+.velora-desktop .dock-app.active .dock-indicator {
+	background: var(--os-accent);
+	width: 12px;
+}
+.velora-desktop .dock-divider {
+	height: 25px;
+	width: 1px;
+	flex-shrink: 0;
+	background: rgba(255, 255, 255, 0.12);
+}
+.velora-desktop .app-launcher {
+	position: absolute;
+	bottom: calc(var(--dock-height) + 26px);
+	left: 50%;
+	transform: translateX(-50%);
+	width: min(480px, calc(100% - 32px));
+	max-height: calc(100% - var(--dock-height) - 85px);
+	overflow: auto;
+	z-index: 10002;
+	padding: 23px;
+	background: rgba(30, 33, 39, 0.94);
+	backdrop-filter: blur(32px);
+	border: 1px solid var(--os-border);
+	border-radius: 17px;
+	box-shadow: 0 20px 65px rgba(0, 0, 0, 0.35);
+	animation: desktop-panel-in 200ms ease-out;
+}
+.velora-desktop .launcher-heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 17px;
+}
+.velora-desktop .launcher-heading h2 {
+	font-size: 17px;
+	font-weight: 500;
+	margin: 0;
+	letter-spacing: -0.4px;
+}
+.velora-desktop .launcher-search {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	border: 1px solid var(--os-border);
+	border-radius: 8px;
+	background: rgba(0, 0, 0, 0.15);
+	padding: 9px 12px;
+	color: #a4a8b0;
+}
+.velora-desktop .launcher-search input {
+	min-width: 0;
+	width: 100%;
+	color: white;
+	background: transparent;
+	border: 0;
+	outline: 0;
+}
+.velora-desktop .launcher-search:focus-within {
+	border-color: var(--os-accent);
+}
+.velora-desktop .launcher-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 8px;
+	padding: 22px 0;
+}
+.velora-desktop .launcher-grid button {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 9px;
+	border: 0;
+	border-radius: 8px;
+	padding: 10px 0;
+	background: transparent;
+	font-size: 11px;
+}
+.velora-desktop .launcher-grid button:hover {
+	background: rgba(255, 255, 255, 0.06);
+}
+.velora-desktop .no-apps {
+	grid-column: 1/-1;
+	color: var(--os-muted);
+	text-align: center;
+}
+.velora-desktop .launcher-footer {
+	display: flex;
+	justify-content: space-between;
+	border-top: 1px solid var(--os-border);
+	padding-top: 15px;
+}
+.velora-desktop .launcher-footer button {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	padding: 6px;
+	background: none;
+	border: 0;
+	color: #d4cfbf;
 	font-size: 12px;
-	transition: background 0.1s;
 }
-
-.previewCard:hover {
-	background: var(--overlay-hover-strong);
+.velora-desktop .contextMenu,
+.velora-desktop .previewPanel {
+	position: fixed;
+	width: 236px;
+	z-index: 10003;
+	padding: 6px;
+	border: 1px solid var(--os-border);
+	background: rgba(30, 33, 39, 0.94);
+	backdrop-filter: blur(24px);
+	border-radius: 10px;
+	box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
 }
-@keyframes brighten {
+.velora-desktop .menuOption,
+.velora-desktop .previewCard {
+	display: block;
+	width: 100%;
+	text-align: left;
+	border: 0;
+	border-radius: 6px;
+	padding: 10px 12px;
+	background: transparent;
+	font-size: 12px;
+}
+.velora-desktop .menuOption:hover,
+.velora-desktop .previewCard:hover {
+	background: rgba(255, 255, 255, 0.1);
+}
+.velora-desktop .menuOption.danger {
+	color: #efafa8;
+}
+.velora-desktop .previewPanel {
+	bottom: calc(var(--dock-height) + 26px);
+}
+.velora-desktop .previewCard p {
+	margin: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.velora-desktop .modalOverlay {
+	width: min(440px, calc(100vw - 32px));
+	max-height: calc(100dvh - 48px);
+	border: 1px solid var(--os-border);
+	padding: 0;
+	border-radius: 16px;
+	background: #22252c;
+	color: var(--os-text);
+	box-shadow: 0 24px 90px #0008;
+}
+.velora-desktop .modalOverlay::backdrop {
+	background: rgba(8, 10, 15, 0.5);
+	backdrop-filter: blur(8px);
+}
+.velora-desktop .modal {
+	padding: 26px;
+}
+.velora-desktop .modalTitle {
+	font-size: 21px;
+	margin: 0 0 20px;
+}
+.velora-desktop .modalLabel {
+	margin: 14px 0 7px;
+	color: #c2c4cb;
+	font-size: 12px;
+}
+.velora-desktop .modalInput {
+	padding: 10px 12px;
+	width: 100%;
+	border: 1px solid var(--os-border);
+	border-radius: 7px;
+	background: rgba(0, 0, 0, 0.16);
+	color: #fff;
+}
+.velora-desktop .advancedToggle {
+	margin-top: 18px;
+	background: none;
+	border: 0;
+	padding: 4px 0;
+	color: var(--os-muted);
+}
+.velora-desktop .modalOptions,
+.velora-desktop .modalActions {
+	display: flex;
+	gap: 8px;
+}
+.velora-desktop .modalOption,
+.velora-desktop .modalBtn {
+	border: 1px solid var(--os-border);
+	border-radius: 7px;
+	padding: 8px 12px;
+	background: transparent;
+}
+.velora-desktop .modalOption.active {
+	background: #d6c5a51f;
+	border-color: #d6c5a580;
+}
+.velora-desktop .modalActions {
+	justify-content: flex-end;
+	margin-top: 24px;
+}
+.velora-desktop .modalBtn.primary {
+	background: #d6c5a5;
+	color: #24231f;
+	border-color: #d6c5a5;
+}
+.velora-desktop .modalError {
+	color: #efafa8;
+	font-size: 12px;
+}
+@keyframes desktop-panel-in {
 	from {
-		filter: brightness(0);
+		opacity: 0;
+		margin-bottom: -8px;
 	}
 	to {
-		filter: brightness(1);
+		opacity: 1;
+		margin-bottom: 0;
+	}
+}
+@media (max-width: 700px) {
+	.velora-desktop .desktop-menubar {
+		padding: 0 12px;
+	}
+	.velora-desktop .desktop-status {
+		gap: 10px;
+	}
+	.velora-desktop .browser-mode span {
+		display: none;
+	}
+	.velora-desktop .desktop-shortcuts {
+		top: 180px;
+		left: 20px;
+		right: 20px;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 4px;
+	}
+	.velora-desktop .desktop-clock {
+		top: 38px;
+	}
+	.velora-desktop .desktop-clock > span {
+		font-size: 64px;
+	}
+	.velora-desktop .desktop-signature {
+		left: 22px;
+		bottom: 76px;
+	}
+	.velora-desktop .desktop-signature p {
+		font-size: 17px;
+	}
+	.velora-desktop .personalize-button {
+		right: 20px;
+		bottom: 18px;
+	}
+	.velora-desktop .desktop-dock {
+		gap: 3px;
+		padding: 6px;
+		border-radius: 14px;
+	}
+	.velora-desktop .dock-personalize,
+	.velora-desktop .dock-divider:last-of-type {
+		display: none;
+	}
+	.velora-desktop .launcher-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.velora-desktop *,
+	.velora-desktop *::before,
+	.velora-desktop *::after {
+		animation: none !important;
+		transition: none !important;
 	}
 }

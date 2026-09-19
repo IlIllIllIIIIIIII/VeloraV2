@@ -9,8 +9,6 @@
 	import gsap from 'gsap';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
-	import { scale } from 'svelte/transition';
-	import { linear } from 'svelte/easing';
 	import { loadSetting } from '$lib/utils/localspace.js';
 	import {
 		topZ,
@@ -24,7 +22,12 @@
 	let z = $state(1);
 	let minimizedStat = $state(false);
 	let rightSplit = $state(false);
-	let taskbarHeight = $state(40);
+	let taskbarHeight = $state(64);
+	let windowElement;
+	let viewportHeight = $state(800);
+	let reducedMotion = $state(false);
+	let mounted = false;
+	let transitionTimer;
 	let {
 		url,
 		name,
@@ -48,7 +51,32 @@
 	let offSety = 0;
 	let draggingState = $state(false);
 	let transition = $state(false);
-	const topBarrier = 25;
+	const topBarrier = 40;
+	const desktopGap = 8;
+	const dockGap = 12;
+	const duration = () => (reducedMotion ? 0 : 0.2);
+
+	function animatePlacement() {
+		transition = !reducedMotion;
+		clearTimeout(transitionTimer);
+		transitionTimer = setTimeout(() => {
+			transition = false;
+		}, 200);
+	}
+
+	function fitWorkspace(split = false) {
+		const availableWidth = window.innerWidth - desktopGap * 2;
+		width = `${split ? (availableWidth - desktopGap) / 2 : availableWidth}px`;
+		height = `${Math.max(100, window.innerHeight - topBarrier - taskbarHeight - dockGap - desktopGap * 2)}px`;
+		x = split === 'right' ? (window.innerWidth + desktopGap) / 2 : desktopGap;
+		y = topBarrier + desktopGap;
+	}
+
+	function sizeInPixels(value, viewport, fallback) {
+		const parsed = parseFloat(value);
+		if (!Number.isFinite(parsed)) return fallback;
+		return String(value).endsWith('%') ? (viewport * parsed) / 100 : parsed;
+	}
 	//
 	//----- window drag logic -----
 	//
@@ -58,6 +86,8 @@
 		z = get(topZ);
 	}
 	function dragStart(e) {
+		if (e.button !== 0 || e.target.closest('button') || window.innerWidth <= 640) return;
+		e.preventDefault();
 		activeSignal.set(sender);
 		draggingState = true;
 		offSetx = e.clientX - x;
@@ -71,6 +101,7 @@
 			transition = false;
 			height = tempHeight;
 			width = tempWidth;
+			offSetx = Math.min(offSetx, parseFloat(tempWidth) / 2);
 			x = e.clientX - offSetx;
 		}
 	}
@@ -88,9 +119,9 @@
 			width = tempWidth;
 			rightSplit = false;
 		} else {
-			if (e.clientX > window.innerWidth - 200) {
+			if (e.clientX > window.innerWidth - 48) {
 				rightSplit = true;
-			} else if (e.clientX < 200) {
+			} else if (e.clientX < 48) {
 				rightSplit = 'left';
 			} else {
 				rightSplit = false;
@@ -98,34 +129,51 @@
 		}
 	}
 	function checkBoundaries() {
-		if (y < topBarrier) {
-			y = topBarrier;
+		if (!windowElement || minimizedStat) return;
+		viewportHeight = window.innerHeight;
+		if (maximizedStat || window.innerWidth <= 640) {
+			fitWorkspace();
+			return;
 		}
-		// if (x < 0) {
-		// 	x = 0;
-		// }
-		if (y > window.innerHeight - document.getElementById(id).offsetHeight - taskbarHeight) {
-			y = window.innerHeight - document.getElementById(id).offsetHeight - taskbarHeight;
-		}
+		const availableWidth = Math.max(100, window.innerWidth - desktopGap * 2);
+		const availableHeight = Math.max(
+			100,
+			viewportHeight - topBarrier - taskbarHeight - dockGap - desktopGap * 2
+		);
+		const currentWidth = Math.min(
+			sizeInPixels(width, window.innerWidth, availableWidth),
+			availableWidth
+		);
+		const currentHeight = Math.min(
+			sizeInPixels(height, viewportHeight, availableHeight),
+			availableHeight
+		);
+		width = `${currentWidth}px`;
+		height = `${currentHeight}px`;
+		x = Math.max(
+			desktopGap,
+			Math.min(Number(x) || desktopGap, window.innerWidth - currentWidth - desktopGap)
+		);
+		y = Math.max(
+			topBarrier + desktopGap,
+			Math.min(
+				Number(y) || topBarrier,
+				viewportHeight - taskbarHeight - dockGap - currentHeight - desktopGap
+			)
+		);
 	}
 	function dragStop() {
 		if (rightSplit === true) {
-			transition = true;
+			animatePlacement();
 			tempHeight = height;
 			tempWidth = width;
-			width = '50%';
-			x =  -1 + window.innerWidth - window.innerWidth / 2;
-			y = 0;
-			height = ((window.innerHeight - taskbarHeight) / window.innerHeight) * 100 + '%';
+			fitWorkspace('right');
 			rightSplit = null;
 		} else if (rightSplit === 'left') {
-			transition = true;
+			animatePlacement();
 			tempHeight = height;
 			tempWidth = width;
-			width = '50%';
-			x = -1;
-			y = 0;
-			height = ((window.innerHeight - taskbarHeight) / window.innerHeight) * 100 + '%';
+			fitWorkspace('left');
 			rightSplit = null;
 		} else {
 			checkBoundaries();
@@ -143,10 +191,10 @@
 	let tempWidth = 0;
 	let maximizedStat = $state(false);
 	export async function updateTaskbarHeight() {
-		let x = await loadSetting('navbarsize', 0);
-		taskbarHeight = 40 + x;
+		const size = await loadSetting('navbarsize', 24);
+		taskbarHeight = 40 + (Number(size) || 0);
+		if (mounted) checkBoundaries();
 	}
-	updateTaskbarHeight();
 	function maximizeWindow() {
 		activeSignal.set(sender);
 		if (maximizedStat === true) {
@@ -154,39 +202,55 @@
 			x = tempX;
 			height = tempHeight;
 			width = tempWidth;
-			transition = true;
+			animatePlacement();
 			maximizedStat = false;
-			setTimeout(() => {
-				transition = false;
-			}, 300);
+			requestAnimationFrame(checkBoundaries);
 		} else {
 			setTop();
 			tempX = x;
 			tempY = y;
 			tempHeight = height;
 			tempWidth = width;
-			height = ((window.innerHeight - taskbarHeight) / window.innerHeight) * 100 + '%';
-			width = '100%';
-			x = -1;
-			y = -1;
+			fitWorkspace();
 			maximizedStat = true;
-			transition = true;
+			animatePlacement();
 		}
 	}
 	onMount(() => {
+		mounted = true;
+		const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+		const syncMotion = () => {
+			reducedMotion = motion.matches;
+		};
+		syncMotion();
+		checkBoundaries();
+		updateTaskbarHeight();
+		window.addEventListener('resize', checkBoundaries);
+		motion.addEventListener('change', syncMotion);
 		gsap.fromTo(
-			`#${id}`,
+			windowElement,
 			{
-				scale: 0.8,
+				scale: reducedMotion ? 1 : 0.97,
 				opacity: 0.5
 			},
 			{
 				scale: 1,
 				opacity: 1,
-				duration: 0.3,
+				duration: duration(),
 				ease: 'power2.out'
 			}
 		);
+		return () => {
+			mounted = false;
+			clearTimeout(transitionTimer);
+			gsap.killTweensOf(windowElement);
+			window.removeEventListener('resize', checkBoundaries);
+			window.removeEventListener('mousemove', dragging);
+			window.removeEventListener('mouseup', dragStop);
+			window.removeEventListener('mousemove', resizing);
+			window.removeEventListener('mouseup', resizeStop);
+			motion.removeEventListener('change', syncMotion);
+		};
 	});
 
 	function setMinimizedFlag(value) {
@@ -207,18 +271,19 @@
 	function restoreFromMinimized() {
 		minimizedStat = false;
 		setMinimizedFlag(false);
+		windowElement.style.display = 'flex';
+		checkBoundaries();
+		setTop();
+		activeSignal.set(sender);
+		gsap.killTweensOf(windowElement);
 		gsap.fromTo(
-			`#${id}`,
-			{ scale: 0.8, opacity: 0 },
+			windowElement,
+			{ scale: reducedMotion ? 1 : 0.97, opacity: 0 },
 			{
 				scale: 1,
 				opacity: 1,
-				duration: 0.3,
-				onStart: function () {
-					document.getElementById(id).style.display = 'flex';
-					setTop();
-					activeSignal.set(sender);
-				}
+				duration: duration(),
+				ease: 'power2.out'
 			}
 		);
 	}
@@ -226,11 +291,11 @@
 	function closeWindow() {
 		transition = false;
 		activeSignal.set(null);
-		gsap.to(`#${id}`, {
-			scale: 0.8,
+		gsap.to(windowElement, {
+			scale: reducedMotion ? 1 : 0.97,
 			opacity: 0,
-			duration: 0.2,
-			ease: 'ease',
+			duration: duration(),
+			ease: 'power2.out',
 			onComplete: function () {
 				const list = get(windowList);
 				const remaining = [];
@@ -249,31 +314,17 @@
 		setMinimizedFlag(minimizedStat);
 		if (minimizedStat) {
 			activeSignal.set(null);
-			gsap.killTweensOf(`#${id}`);
-			gsap.to(`#${id}`, {
-				scale: 0.8,
+			gsap.killTweensOf(windowElement);
+			gsap.to(windowElement, {
+				scale: reducedMotion ? 1 : 0.97,
 				opacity: 0,
-				duration: 0.2,
+				duration: duration(),
 				onComplete: function () {
-					document.getElementById(id).style.display = 'none';
+					windowElement.style.display = 'none';
 				}
 			});
 		} else {
-			activeSignal.set(sender);
-			gsap.killTweensOf(`#${id}`);
-			gsap.fromTo(
-				`#${id}`,
-				{ scale: 0.8, opacity: 0 },
-				{
-					scale: 1,
-					opacity: 1,
-					duration: 0.3,
-					onStart: function () {
-						document.getElementById(id).style.display = 'flex';
-						setTop();
-					}
-				}
-			);
+			restoreFromMinimized();
 		}
 		minimizedSig.set(null);
 	}
@@ -284,10 +335,13 @@
 
 	let startX, startY, resizeType, startWidth, startHeight, startTop, startLeft;
 	function resizeStart(e, type) {
+		if (e.button !== 0 || maximizedStat || window.innerWidth <= 640) return;
+		e.preventDefault();
+		e.stopPropagation();
 		activeSignal.set(sender);
 		setTop();
 		draggingState = true;
-		const rect = document.getElementById(id).getBoundingClientRect();
+		const rect = windowElement.getBoundingClientRect();
 		startX = e.clientX;
 		startY = e.clientY;
 		resizeType = type;
@@ -302,10 +356,9 @@
 		transition = false;
 		const mouseXmove = e.clientX - startX;
 		const mouseYmove = e.clientY - startY;
-		const maxWidth = window.innerWidth - x;
-		const maxHeight = window.innerHeight - y;
-		const maxHeightBottom = window.innerHeight - y - taskbarHeight;
-		const maxHeightTop = 25;
+		const maxWidth = window.innerWidth - x - desktopGap;
+		const maxHeightBottom = window.innerHeight - y - taskbarHeight - dockGap - desktopGap;
+		const maxHeightTop = topBarrier + desktopGap;
 		if (resizeType === 'right') {
 			width = Math.min(maxWidth, Math.max(400, startWidth + mouseXmove)) + 'px';
 		}
@@ -383,45 +436,16 @@
 			setTop();
 			activeSignal.set(sender);
 		} else {
-			minimizedStat = !minimizedStat;
-			setMinimizedFlag(minimizedStat);
-			if (minimizedStat) {
-				activeSignal.set(null);
-				gsap.to(`#${id}`, {
-					scale: 0.8,
-					opacity: 0,
-					duration: 0.2,
-					onComplete: function () {
-						document.getElementById(id).style.display = 'none';
-					}
-				});
-			} else {
-				transition = false;
-				activeSignal.set(sender);
-				gsap.fromTo(
-					`#${id}`,
-					{ scale: 0.8, opacity: 0 },
-					{
-						scale: 1,
-						opacity: 1,
-						duration: 0.3,
-						onStart: function () {
-							document.getElementById(id).style.display = 'flex';
-							setTop();
-						}
-					}
-				);
-			}
+			minimizeWindow();
 		}
 		minimizedSig.set(null);
 	});
-	async function getHeight() {
-		return;
-	}
 </script>
 
 <div
-	role="toolbar"
+	bind:this={windowElement}
+	role="dialog"
+	aria-labelledby={`${id}-title`}
 	class="window noSelect"
 	class:active={z == $topZ}
 	{id}
@@ -431,47 +455,63 @@
     top:{y}px;
     left:{x}px;
     z-index: {z};
-			  transition-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
-    transition-duration: {transition == true ? '0.2s' : '0s'};
+    --window-dock-space: {taskbarHeight + dockGap}px;
+    transition-duration: {transition && !reducedMotion ? '0.2s' : '0s'};
 
   "
 >
 	<div
+		role="presentation"
+		aria-hidden="true"
 		onmousedown={(e) => resizeStart(e, 'top')}
 		class="r-top side resizer"
 		class:active={maximizedStat === true}
 	></div>
 	<div
+		role="presentation"
+		aria-hidden="true"
 		onmousedown={(e) => resizeStart(e, 'right')}
 		class="r-right side resizer"
 		class:active={maximizedStat === true}
 	></div>
 	<div
+		role="presentation"
+		aria-hidden="true"
 		onmousedown={(e) => resizeStart(e, 'bottom')}
 		class="r-bottom side resizer"
 		class:active={maximizedStat === true}
 	></div>
 	<div
+		role="presentation"
+		aria-hidden="true"
 		onmousedown={(e) => resizeStart(e, 'left')}
 		class="r-left side resizer"
 		class:active={maximizedStat === true}
 	></div>
 	<div
+		role="presentation"
+		aria-hidden="true"
 		onmousedown={(e) => resizeStart(e, 'topRight')}
 		class="r-top-right corner resizer"
 		class:active={maximizedStat === true}
 	></div>
 	<div
+		role="presentation"
+		aria-hidden="true"
 		onmousedown={(e) => resizeStart(e, 'topLeft')}
 		class="r-top-left corner resizer"
 		class:active={maximizedStat === true}
 	></div>
 	<div
+		role="presentation"
+		aria-hidden="true"
 		onmousedown={(e) => resizeStart(e, 'bottomRight')}
 		class="r-bottom-right corner resizer"
 		class:active={maximizedStat === true}
 	></div>
 	<div
+		role="presentation"
+		aria-hidden="true"
 		onmousedown={(e) => resizeStart(e, 'bottomLeft')}
 		class="r-bottom-left corner resizer"
 		class:active={maximizedStat === true}
@@ -480,7 +520,16 @@
 	<div
 		class="windowCover"
 		class:active={z == $topZ}
-		{id}
+		role="button"
+		tabindex={z == $topZ ? -1 : 0}
+		aria-label={`Focus ${name}`}
+		onkeydown={(event) => {
+			if (event.key === 'Enter' || event.key === ' ') {
+				event.preventDefault();
+				setTop();
+				activeSignal.set(sender);
+			}
+		}}
 		onclick={() => {
 			setTop();
 			activeSignal.set(sender);
@@ -490,21 +539,48 @@
     z-index: {z};
   "
 	></div>
-	<div class="bar noSelect" style="width: 100%;">
+	<div
+		class="bar noSelect"
+		role="toolbar"
+		tabindex="-1"
+		aria-label={`${name} window controls`}
+		onmousedown={dragStart}
+		ondblclick={(event) => {
+			if (!event.target.closest('button')) maximizeWindow();
+		}}
+	>
 		<div class="bar-left">
-			<p class="window-title">{name}</p>
+			<span class="window-status-dot" aria-hidden="true"></span>
+			<p class="window-title" id={`${id}-title`}>{name}</p>
 		</div>
-		<div class="bar-middle" onmousedown={dragStart} ondblclick={maximizeWindow}></div>
+		<div class="bar-middle"></div>
 		<div class="bar-right">
-			<button class="navControl" onclick={minimizeWindow} type="button">
-				<img class="minimize noSelect" src={minimize} alt="Minimize" />
+			<button
+				class="navControl"
+				onclick={minimizeWindow}
+				type="button"
+				aria-label={`Minimize ${name}`}
+				title="Minimize"
+			>
+				<img class="minimize noSelect" src={minimize} alt="" />
 			</button>
-			<button class="navControl" onclick={maximizeWindow} type="button">
-				<img class="maximize noSelect" src={maximizedStat ? layers : maximize} alt="Maximize" />
+			<button
+				class="navControl"
+				onclick={maximizeWindow}
+				type="button"
+				aria-label={`${maximizedStat ? 'Restore' : 'Maximize'} ${name}`}
+				title={maximizedStat ? 'Restore' : 'Maximize'}
+			>
+				<img class="maximize noSelect" src={maximizedStat ? layers : maximize} alt="" />
 			</button>
-			<button class="navControl closeDiv" onclick={closeWindow} type="button">
-				<img class="close noSelect" src={close} alt="Close" />
-				<!--I'll just live with this ig-->
+			<button
+				class="navControl closeDiv"
+				onclick={closeWindow}
+				type="button"
+				aria-label={`Close ${name}`}
+				title="Close"
+			>
+				<img class="close noSelect" src={close} alt="" />
 			</button>
 		</div>
 	</div>
@@ -512,21 +588,25 @@
 		class="noSelect"
 		src={url}
 		title={name}
-		style={draggingState ? 'pointer-events: none;' : 'auto'}
+		style:pointer-events={draggingState ? 'none' : 'auto'}
 	></iframe>
 </div>
 
 <div
 	class="snapPreview"
-	style="z-index: {$topZ - 1}; left: {rightSplit === true ? '50%' : '100%'}; height: {document
-		.documentElement.scrollHeight -
-		taskbarHeight -
-		5}px"
+	class:visible={draggingState && rightSplit === true}
+	aria-hidden="true"
+	style="z-index: {$topZ - 1}; left: calc(50% + 4px); height: {Math.max(
+		100,
+		viewportHeight - topBarrier - taskbarHeight - dockGap - desktopGap * 2
+	)}px"
 ></div>
 <div
 	class="snapPreview"
-	style="z-index: {$topZ - 1}; left: {rightSplit === 'left' ? '0%' : '-51%'}; height: {document
-		.documentElement.scrollHeight -
-		taskbarHeight -
-		5}px"
+	class:visible={draggingState && rightSplit === 'left'}
+	aria-hidden="true"
+	style="z-index: {$topZ - 1}; left: 8px; height: {Math.max(
+		100,
+		viewportHeight - topBarrier - taskbarHeight - dockGap - desktopGap * 2
+	)}px"
 ></div>
