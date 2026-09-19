@@ -1,29 +1,23 @@
 <script>
 	import '$lib/style/settings.css';
 
-	const version = 'v7.0';
+	const version = 'v1.12';
 	const stack = ['SvelteKit', 'Svelte 5', 'Vite', 'Fastify', 'GSAP', 'JS'];
 	const info = [
 		{ key: 'Version', value: version },
-		{ key: 'Developer', value: 'Rogo' },
+		{ key: 'Developer', value: 'pozzi' },
 		{ key: 'Released', value: '2026' }
 	];
 
 	const credits = [
-		{
-			label: 'Original',
-			labeltwo: ' project source',
-			url: 'https://gitlab.com/Hydra.Network/galaxy/galaxyv7'
-		},
 		{ label: 'Disc', labeltwo: 'ord Server', url: 'https://tinyurl.com/galaxyiscool' },
-		{ label: 'Scra', labeltwo: 'mjet', url: 'https://tinyurl.com/hgworkshopsj' },
+		{ label: 'Scra', labeltwo: 'mjet', url: 'https://discord.gg/qrZnbQuVs' },
 		{
 			label: 'Ultra',
 			labeltwo: 'violet',
 			url: 'https://tinyurl.com/tnnetworkuv'
 		},
 		{ label: 'Reflux', labeltwo: '', url: 'https://github.com/Obsidian-Dev-Labs/Reflux' },
-		{ label: 'Backgrounds', labeltwo: '', url: 'https://pin.it/kiPWq2bBW' }
 	];
 
 	let modal = $state(false);
@@ -109,11 +103,11 @@
 			<div class="infoRows">
 				<div class="infoRow">
 					<span class="infoKey">DC User</span>
-					<span class="infoVal">rogo7070</span>
+					<span class="infoVal">notpozzii</span>
 				</div>
 				<div class="infoRow">
 					<span class="infoKey">Email</span>
-					<span class="infoVal">rogo@galxy.it.com</span>
+					<span class="infoVal">Unknown</span>
 				</div>
 			</div>
 		</div>

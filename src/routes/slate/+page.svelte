@@ -40,7 +40,7 @@
 	let sjFrame;
 	let customWisp = $state('');
 	let searchEngine = $state('ddg');
-	let car = $state('libcurl');
+	let car = $state('epoxy');
 	let bookmarks = $state([]);
 	let connection;
 	let activeFrame = $derived(frames.find((frame) => frame.id === $activeTab));
@@ -101,7 +101,7 @@
 		const [lethe, savedCar, wisp, engine, marks, intercept, LastPopupIntStateX] = await Promise.all(
 			[
 				loadSetting('lethe', 'sj2'),
-				loadSetting('car', 'libcurl'),
+				loadSetting('car', 'epoxy'),
 				loadSetting('customWisp', ''),
 				loadSetting('searchEngine', 'brave'),
 				loadSetting('bookmarks', [], JSON.parse),

@@ -33,12 +33,6 @@ autoSW:    true loads on its own, false waits for a click first
 
 	const api = '/api?url={}&type={}&transport={}&wisp={}&notif={}&autoSW={}';
 	const params = [
-		['url', 'required', 'https:// added when missing'],
-		['type', 'prism', 'prism (sjv2), polygon (sj), glass (uv)'],
-		['transport', 'libcurlRaw', 'libcurlRaw, libcurl(dont use), epoxy'],
-		['wisp', 'this server', 'wss://... to use another wisp'],
-		['notif', 'none', 'toast text, shown by /os when it opens the window'],
-		['autoSW', 'true', 'false shows a button and loads on click instead']
 	];
 	let ready = $state(false);
 	let showButton = $state(false);
@@ -137,7 +131,7 @@ autoSW:    true loads on its own, false waits for a click first
 			<dd><span class="fallback">{fallback}</span> — {notes}</dd>
 		{/each}
 	</dl>
-	<p class="example">/api?url=example.com&amp;type=prism&amp;transport=libcurlRaw</p>
+	<p class="example">/</p>
 </div>
 
 <style>
