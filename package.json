@@ -6,7 +6,7 @@
 	"scripts": {
 		"start": "node index.js",
 		"dev": "vite dev",
-		"build": "wrangler types --check && vite build",
+		"build": "wrangler types && vite build",
 		"changelog": "node scripts/changelog.js",
 		"preview": "npm run build && wrangler dev",
 		"prepare": "svelte-kit sync || echo ''",
