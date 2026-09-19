@@ -13,8 +13,6 @@
 	import { onMount } from 'svelte';
 	import mainBG from '$lib/img/bg/dark-mountains.jpg';
 	import Wallpaper from '$lib/utils/os/wallpaper.svelte';
-	import Onboarding from '$lib/utils/os/onboarding.svelte';
-	import { isNewDesktopUser } from '$lib/utils/os/onboarding-state.js';
 	import Icon from '$lib/utils/browser/icon.svelte';
 	import browser from '$lib/img/icons/earthWhite.png';
 	import g from '$lib/img/icons/controller.png';
@@ -43,7 +41,6 @@
 	let bgURL = $state(mainBG);
 	let bgFit = $state('cover');
 	let wallpaperOpen = $state(false);
-	let onboardingOpen = $state(false);
 	let launcherOpen = $state(false);
 	let launcherSearch = $state('');
 	let customWisp = $state('');
@@ -499,16 +496,14 @@
 			loadSetting('bgFit', 'cover'),
 			loadSetting('navbarsize', 24),
 			loadSetting('customApps', []),
-			loadSetting('customWisp', ''),
-			checkFirstVisit()
-		]).then(([background, fit, size, savedApps, wisp, firstVisit]) => {
+			loadSetting('customWisp', '')
+		]).then(([background, fit, size, savedApps, wisp]) => {
 			if (disposed) return;
 			bgURL = background || mainBG;
 			bgFit = fit === 'contain' ? 'contain' : 'cover';
 			navSizeMulti = Math.max(8, Math.min(Number(size) || 24, 39));
 			customApps = Array.isArray(savedApps) ? savedApps : [];
 			customWisp = wisp || '';
-			onboardingOpen = firstVisit;
 			hydrated = true;
 		});
 		updateTime();
@@ -533,37 +528,6 @@
 			subscriptions.forEach((unsubscribe) => unsubscribe());
 		};
 	});
-
-	async function checkFirstVisit() {
-		try {
-			const marker = await loadSetting('desktopOnboarding', null);
-			const saved = await Promise.all(
-				['bg', 'navbarsize', 'customApps', 'lethe', 'car', 'bookmarks', 'searchEngine'].map((key) =>
-					loadSetting(key, null)
-				)
-			);
-			const legacyVisit = [
-				'firstVisit',
-				'mode',
-				'galaxy-sidebar-collapsed',
-				'velora-onboarding-seen'
-			].some((key) => localStorage.getItem(key) !== null);
-			const firstVisit = isNewDesktopUser(marker, saved, legacyVisit);
-			// Record the visit before any interaction, including reload or navigation away.
-			try {
-				localStorage.setItem('velora-onboarding-seen', 'true');
-			} catch {}
-			await saveSetting('desktopOnboarding', marker ?? (firstVisit ? 'shown' : 'existing-user'));
-			return firstVisit;
-		} catch {
-			// If storage cannot be read, avoid interrupting a possibly returning user.
-			return false;
-		}
-	}
-	function finishOnboarding(result) {
-		onboardingOpen = false;
-		saveSetting('desktopOnboarding', result);
-	}
 
 	function launchApp(app) {
 		launcherOpen = false;
@@ -725,16 +689,6 @@
 				><button onclick={personalize}><Icon name="settings" size={15} />Personalize</button>
 			</div>
 		</section>
-	{/if}
-	{#if onboardingOpen}
-		<Onboarding
-			background={bgURL}
-			onapply={(background, fit) => {
-				bgURL = background;
-				bgFit = fit;
-			}}
-			onfinish={finishOnboarding}
-		/>
 	{/if}
 	{#if wallpaperOpen}
 		<Wallpaper
