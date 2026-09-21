@@ -619,3 +619,55 @@ body {
 		animation: none !important;
 	}
 }
+
+.frameContainer iframe:fullscreen {
+	position: fixed;
+	inset: 0;
+	width: 100vw;
+	height: 100vh;
+	max-width: none;
+	max-height: none;
+	border: 0;
+}
+.media-notice {
+	position: absolute;
+	left: 12px;
+	right: 12px;
+	top: 12px;
+	z-index: 10;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 10px 12px;
+	border: 1px solid #d6c5a533;
+	border-radius: 8px;
+	background: #25262bed;
+	color: #ddd;
+	font: 12px var(--zen-font);
+	box-shadow: 0 4px 16px #0002;
+}
+.media-notice span {
+	flex: 1;
+}
+.media-notice a {
+	color: #e1cfab;
+}
+.media-notice button {
+	border: 0;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+	font-size: 18px;
+}
+.media-notice:has(+ .youtube-notice) {
+	top: 64px;
+}
+@media (max-width: 560px) {
+	.media-notice {
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.media-notice span {
+		flex-basis: 100%;
+	}
+}

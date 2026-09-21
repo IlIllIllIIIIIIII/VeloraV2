@@ -36,7 +36,7 @@ function cloakMarkup({ fixedIframe }) {
 		</style>
 	</head>
 	<body>
-		<iframe src="${siteUrl()}"></iframe>
+		<iframe src="${siteUrl()}" allow="fullscreen" allowfullscreen></iframe>
 	</body>
 </html>`;
 }

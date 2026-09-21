@@ -4,6 +4,10 @@
 	import Iframe from '$lib/utils/browser/iframe.svelte';
 	import Home from '$lib/utils/browser/home.svelte';
 	import Icon from '$lib/utils/browser/icon.svelte';
+	import { toggleElementFullscreen } from '$lib/utils/browser/fullscreen.js';
+	import { youtubeDirectUrl } from '$lib/utils/browser/youtube.js';
+	let fullscreenError = $state('');
+	let youtubeHelpDismissed = $state(false);
 	import Modal from '$lib/utils/browser/modal.svelte';
 	import { loadSetting, saveSetting } from '$lib/utils/localspace.js';
 	import {
@@ -343,17 +347,15 @@
 		}
 	}
 
-	function toggleFullscreen() {
-		if (document.fullscreenElement) {
-			document.exitFullscreen();
-		} else {
-			const iframes = document.querySelectorAll('.frameContainer iframe');
-			const activeIframe = Array.from(iframes).find((el) => el.offsetParent !== null);
-			if (activeIframe) {
-				activeIframe.requestFullscreen();
-			}
-		}
+	async function toggleFullscreen() {
+		fullscreenError = '';
 		closeSettings();
+		const target = document.querySelector('.webview-panel.active iframe');
+		try {
+			await toggleElementFullscreen(target);
+		} catch (error) {
+			fullscreenError = error instanceof Error ? error.message : 'Could not enter full screen.';
+		}
 	}
 
 	$effect(() => {
@@ -452,9 +454,17 @@
 
 	async function openHomeShortcut(url, { useAppLoader = false } = {}) {
 		if (!ready) return;
-		if (!activeFrame) { addTab(); await tick(); }
+		if (!activeFrame) {
+			addTab();
+			await tick();
+		}
 		if (useAppLoader) {
-			const params = new URLSearchParams({ url, type: 'prism', transport: 'epoxy', autoSW: 'false' });
+			const params = new URLSearchParams({
+				url,
+				type: 'prism',
+				transport: 'epoxy',
+				autoSW: 'false'
+			});
 			if (customWisp) params.set('wisp', customWisp);
 			// Load the existing app launcher directly; it handles proxying after the user's click.
 			activeFrame.url = `/api?${params.toString()}`;
@@ -462,8 +472,9 @@
 			activeFrame.title = 'GeForce NOW';
 			return;
 		}
-		try { await navigateTo(url); }
-		catch {
+		try {
+			await navigateTo(url);
+		} catch {
 			await openPalette();
 			query = url;
 			paletteError = 'Could not open this page. Check your connection settings and try again.';
@@ -633,6 +644,28 @@
 	</aside>
 
 	<main class="frameContainer" aria-label="Webpage" use:frameShortcuts>
+		{#if fullscreenError}<div class="media-notice" role="alert">
+				<span>{fullscreenError}</span><button
+					onclick={() => {
+						fullscreenError = '';
+					}}
+					aria-label="Dismiss fullscreen message">×</button
+				>
+			</div>{/if}
+		{#if !youtubeHelpDismissed && youtubeDirectUrl(activeFrame?.displayUrl)}
+			<div class="media-notice youtube-notice">
+				<span>YouTube asking you to verify? Try your regular connection.</span><a
+					href={youtubeDirectUrl(activeFrame?.displayUrl)}
+					target="_blank"
+					rel="noopener noreferrer">Open YouTube directly ↗</a
+				><button
+					onclick={() => {
+						youtubeHelpDismissed = true;
+					}}
+					aria-label="Dismiss YouTube help">×</button
+				>
+			</div>
+		{/if}
 		{#each frames as frame (frame.id)}
 			<div
 				class="webview-panel"
@@ -648,11 +681,16 @@
 				/>
 				{#if frame.id === $activeTab && !frame.url}<Home
 						{ready}
-						onsearch={() => openPalette(true)} onopen={openHomeShortcut}
+						onsearch={() => openPalette(true)}
+						onopen={openHomeShortcut}
 					/>{/if}
 			</div>
 		{/each}
-		{#if !tabs.length}<Home {ready} onsearch={() => openPalette(true)} onopen={openHomeShortcut} />{/if}
+		{#if !tabs.length}<Home
+				{ready}
+				onsearch={() => openPalette(true)}
+				onopen={openHomeShortcut}
+			/>{/if}
 	</main>
 
 	{#if paletteOpen}

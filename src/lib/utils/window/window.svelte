@@ -7,6 +7,9 @@
 	import close from '$lib/img/icons/close.png';
 	import layers from '$lib/img/icons/layers.png';
 	import gsap from 'gsap';
+	import Icon from '$lib/utils/browser/icon.svelte';
+	import { snapTarget } from './snap.js';
+	import { toggleElementFullscreen } from '$lib/utils/browser/fullscreen.js';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import { loadSetting } from '$lib/utils/localspace.js';
@@ -24,6 +27,8 @@
 	let rightSplit = $state(false);
 	let taskbarHeight = $state(64);
 	let windowElement;
+	let appFrame;
+	let fullscreenError = $state('');
 	let viewportHeight = $state(800);
 	let reducedMotion = $state(false);
 	let mounted = false;
@@ -61,7 +66,7 @@
 		clearTimeout(transitionTimer);
 		transitionTimer = setTimeout(() => {
 			transition = false;
-		}, 200);
+		}, 150);
 	}
 
 	function fitWorkspace(split = false) {
@@ -98,6 +103,7 @@
 		window.addEventListener('mouseup', dragStop);
 		if (maximizedStat) {
 			maximizedStat = false;
+			rightSplit = false;
 			transition = false;
 			height = tempHeight;
 			width = tempWidth;
@@ -106,6 +112,13 @@
 		}
 	}
 	function dragging(e) {
+		if (rightSplit === null) {
+			transition = false;
+			height = tempHeight;
+			width = tempWidth;
+			offSetx = Math.min(offSetx, parseFloat(tempWidth) / 2);
+			rightSplit = false;
+		}
 		y = e.clientY - offSety;
 		x = e.clientX - offSetx;
 
@@ -113,20 +126,7 @@
 			y = topBarrier;
 		}
 
-		if (rightSplit == null) {
-			transition = false;
-			height = tempHeight;
-			width = tempWidth;
-			rightSplit = false;
-		} else {
-			if (e.clientX > window.innerWidth - 48) {
-				rightSplit = true;
-			} else if (e.clientX < 48) {
-				rightSplit = 'left';
-			} else {
-				rightSplit = false;
-			}
-		}
+		rightSplit = snapTarget(e.clientX, window.innerWidth, rightSplit);
 	}
 	function checkBoundaries() {
 		if (!windowElement || minimizedStat) return;
@@ -194,6 +194,14 @@
 		const size = await loadSetting('navbarsize', 24);
 		taskbarHeight = 40 + (Number(size) || 0);
 		if (mounted) checkBoundaries();
+	}
+	async function fullscreenWindow() {
+		fullscreenError = '';
+		try {
+			await toggleElementFullscreen(appFrame);
+		} catch (error) {
+			fullscreenError = error?.message || 'Could not enter full screen.';
+		}
 	}
 	function maximizeWindow() {
 		activeSignal.set(sender);
@@ -456,7 +464,7 @@
     left:{x}px;
     z-index: {z};
     --window-dock-space: {taskbarHeight + dockGap}px;
-    transition-duration: {transition && !reducedMotion ? '0.2s' : '0s'};
+    transition-duration: {transition && !reducedMotion ? '0.15s' : '0s'};
 
   "
 >
@@ -557,6 +565,13 @@
 		<div class="bar-right">
 			<button
 				class="navControl"
+				onclick={fullscreenWindow}
+				type="button"
+				aria-label={`Full screen ${name}`}
+				title="Full screen"><Icon name="fullscreen" size={14} /></button
+			>
+			<button
+				class="navControl"
 				onclick={minimizeWindow}
 				type="button"
 				aria-label={`Minimize ${name}`}
@@ -584,7 +599,18 @@
 			</button>
 		</div>
 	</div>
+	{#if fullscreenError}<p class="window-fullscreen-error" role="alert">
+			{fullscreenError}<button
+				onclick={() => {
+					fullscreenError = '';
+				}}
+				aria-label="Dismiss fullscreen message">×</button
+			>
+		</p>{/if}
 	<iframe
+		bind:this={appFrame}
+		allow="fullscreen; autoplay; picture-in-picture"
+		allowfullscreen
 		class="noSelect"
 		src={url}
 		title={name}
