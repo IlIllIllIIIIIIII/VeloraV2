@@ -186,7 +186,13 @@
 >
 	⬅
 </div>
-<iframe bind:this={iframeEl} title="" style="display: {frameDisplay};"></iframe>
+<iframe
+	allow="fullscreen; autoplay; picture-in-picture"
+	allowfullscreen
+	bind:this={iframeEl}
+	title=""
+	style="display: {frameDisplay};"
+></iframe>
 
 {#snippet appCard(app)}
 	<div class="appDiv">

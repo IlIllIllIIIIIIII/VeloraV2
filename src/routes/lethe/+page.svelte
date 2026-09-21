@@ -165,7 +165,12 @@
 		<option value="epoxy">Epoxy</option>
 	</select>
 </form>
-<iframe bind:this={iframeEl} title=""></iframe>
+<iframe
+	allow="fullscreen; autoplay; picture-in-picture"
+	allowfullscreen
+	bind:this={iframeEl}
+	title=""
+></iframe>
 
 <style>
 	:global(body) {

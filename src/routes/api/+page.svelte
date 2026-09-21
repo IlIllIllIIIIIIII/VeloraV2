@@ -32,8 +32,7 @@ autoSW:    true loads on its own, false waits for a click first
 	}
 
 	const api = '/api?url={}&type={}&transport={}&wisp={}&notif={}&autoSW={}';
-	const params = [
-	];
+	const params = [];
 	let ready = $state(false);
 	let showButton = $state(false);
 	let iframeEl;
@@ -115,7 +114,13 @@ autoSW:    true loads on its own, false waits for a click first
 	});
 </script>
 
-<iframe bind:this={iframeEl} title="" style="opacity: {apiUrl ? '100%' : '0'};"></iframe>
+<iframe
+	allow="fullscreen; autoplay; picture-in-picture"
+	allowfullscreen
+	bind:this={iframeEl}
+	title=""
+	style="opacity: {apiUrl ? '100%' : '0'};"
+></iframe>
 
 {#if showButton}
 	<div class="start">

@@ -261,7 +261,7 @@
 					}
 				}
 			}
-	
+
 			if (!win.__galaxyNewTabBound) {
 				win.__galaxyNewTabBound = true;
 				win.addEventListener(newTabEventName, function (messageEvent) {
@@ -307,6 +307,8 @@
 </script>
 
 <iframe
+	allow="fullscreen; autoplay; picture-in-picture"
+	allowfullscreen
 	bind:this={frame}
 	{src}
 	onload={handleLoad}
