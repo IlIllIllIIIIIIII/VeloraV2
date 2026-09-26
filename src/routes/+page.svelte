@@ -9,11 +9,11 @@
 	let operation = $state(null);
 	let awaitingValue = $state(false);
 	let codeInput = '';
-	let calculatorCompleted = $state(false);
-	const smartLink = 'https://www.profitableratecpmnetwork.com/gq87k39hs?key=829bb5eb83dab1aecc22a1013e54fcc4';
+	const smartLink = 'https://www.profitableratecpmnetwork.com/vqypd4bd4z?key=6ffbf570d5a651935b80b8e1a472f652';
 
 	onMount(() => {
 		let disposed = false;
+		localStorage.removeItem('initialSmartlinkOpened');
 		async function chooseHome() {
 			const [completed, ...existingSettings] = await Promise.all([
 				loadSetting('calculatorCompleted', false, (raw) => raw === 'true'),
@@ -24,7 +24,6 @@
 				loadSetting('customApps', null)
 			]);
 			if (disposed) return;
-			calculatorCompleted = completed === true;
 			const visited = localStorage.getItem('firstVisit') === 'false';
 			homeView = completed || visited || existingSettings.some((value) => value !== null)
 				? 'desktop'
@@ -37,13 +36,10 @@
 	});
 
 	$effect(() => {
-		if (homeView !== 'desktop' || !calculatorCompleted) return;
-		if (localStorage.getItem('initialSmartlinkOpened') === 'true') return;
+		if (homeView !== 'desktop') return;
 
 		function openSponsor() {
-			if (localStorage.getItem('disableAds') === 'true' ||
-				localStorage.getItem('initialSmartlinkOpened') === 'true') return;
-			localStorage.setItem('initialSmartlinkOpened', 'true');
+			if (localStorage.getItem('disableAds') === 'true') return;
 			window.open(smartLink, '_blank', 'noopener,noreferrer');
 		}
 
@@ -53,7 +49,6 @@
 
 	async function finishCalculator() {
 		await saveSetting('calculatorCompleted', true);
-		calculatorCompleted = true;
 		homeView = 'desktop';
 	}
 
