@@ -25,7 +25,6 @@
 	import gsap from 'gsap';
 	import { loadSetting, saveSetting, onSettingChange } from '$lib/utils/localspace.js';
 	import faviconFetch from 'favicon-fetch';
-	import { launchAds } from '$lib/utils/ads';
 
 	let activeButton = $state(null);
 	let menuOpen = $state(false);
@@ -202,13 +201,11 @@
 		applyStartupSettings();
 		hostname = location.hostname;
 		if (hostname.includes('localhost')) hostname = 'v7.galxy.it.com';
-		document.addEventListener('mousedown', launchAds);
 		const syncFullscreen = () => {
 			fullscreen = !!document.fullscreenElement;
 		};
 		document.addEventListener('fullscreenchange', syncFullscreen);
 		return () => {
-			document.removeEventListener('mousedown', launchAds);
 			document.removeEventListener('fullscreenchange', syncFullscreen);
 			clearTimeout(hoverTimeout);
 			clearTimeout(closeTimeout);
