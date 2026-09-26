@@ -9,18 +9,11 @@
 	let operation = $state(null);
 	let awaitingValue = $state(false);
 	let codeInput = '';
-	let showSponsor = $state(false);
+	let calculatorCompleted = $state(false);
 	const smartLink = 'https://www.profitableratecpmnetwork.com/gq87k39hs?key=829bb5eb83dab1aecc22a1013e54fcc4';
 
 	onMount(() => {
 		let disposed = false;
-		function syncSponsor() {
-			showSponsor = localStorage.getItem('disableAds') !== 'true' &&
-				localStorage.getItem('initialSmartlinkOpened') !== 'true';
-		}
-		syncSponsor();
-		window.addEventListener('ads-disabled', syncSponsor);
-		window.addEventListener('storage', syncSponsor);
 		async function chooseHome() {
 			const [completed, ...existingSettings] = await Promise.all([
 				loadSetting('calculatorCompleted', false, (raw) => raw === 'true'),
@@ -31,6 +24,7 @@
 				loadSetting('customApps', null)
 			]);
 			if (disposed) return;
+			calculatorCompleted = completed === true;
 			const visited = localStorage.getItem('firstVisit') === 'false';
 			homeView = completed || visited || existingSettings.some((value) => value !== null)
 				? 'desktop'
@@ -39,18 +33,27 @@
 		void chooseHome();
 		return () => {
 			disposed = true;
-			window.removeEventListener('ads-disabled', syncSponsor);
-			window.removeEventListener('storage', syncSponsor);
 		};
 	});
 
-	function openSponsor() {
-		localStorage.setItem('initialSmartlinkOpened', 'true');
-		showSponsor = false;
-	}
+	$effect(() => {
+		if (homeView !== 'desktop' || !calculatorCompleted) return;
+		if (localStorage.getItem('initialSmartlinkOpened') === 'true') return;
+
+		function openSponsor() {
+			if (localStorage.getItem('disableAds') === 'true' ||
+				localStorage.getItem('initialSmartlinkOpened') === 'true') return;
+			localStorage.setItem('initialSmartlinkOpened', 'true');
+			window.open(smartLink, '_blank', 'noopener,noreferrer');
+		}
+
+		document.addEventListener('click', openSponsor, { capture: true, once: true });
+		return () => document.removeEventListener('click', openSponsor, true);
+	});
 
 	async function finishCalculator() {
 		await saveSetting('calculatorCompleted', true);
+		calculatorCompleted = true;
 		homeView = 'desktop';
 	}
 
@@ -205,9 +208,6 @@
 				>
 			{/each}
 		</div>
-		{#if showSponsor}
-			<a class="sponsor-link" href={smartLink} target="_blank" rel="noopener noreferrer sponsored" onclick={openSponsor}>Sponsored link ↗</a>
-		{/if}
 	</section>
 </div>
 {:else}
@@ -280,15 +280,4 @@
 	.keypad .operator { background: #dce8fa; color: #20549a; }
 	.keypad .operator:hover { background: #cbdcf6; }
 	.keypad .zero { grid-column: span 2; }
-	.sponsor-link {
-		display: block;
-		margin-top: 18px;
-		color: #697386;
-		font-size: 12px;
-		text-align: center;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-	.sponsor-link:hover { color: #20549a; }
-	.sponsor-link:focus-visible { outline: 2px solid #5275aa; outline-offset: 3px; }
 </style>
