@@ -1,11 +1,40 @@
 <script>
-	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { loadSetting, saveSetting } from '$lib/utils/localspace.js';
+	import Desktop from './os/+page.svelte';
 
+	let homeView = $state('loading');
 	let display = $state('0');
 	let savedValue = $state(null);
 	let operation = $state(null);
 	let awaitingValue = $state(false);
 	let codeInput = '';
+
+	onMount(() => {
+		let disposed = false;
+		async function chooseHome() {
+			const [completed, ...existingSettings] = await Promise.all([
+				loadSetting('calculatorCompleted', false, (raw) => raw === 'true'),
+				loadSetting('navbarsize', null),
+				loadSetting('lethe', null),
+				loadSetting('car', null),
+				loadSetting('bg', null),
+				loadSetting('customApps', null)
+			]);
+			if (disposed) return;
+			const visited = localStorage.getItem('firstVisit') === 'false';
+			homeView = completed || visited || existingSettings.some((value) => value !== null)
+				? 'desktop'
+				: 'calculator';
+		}
+		void chooseHome();
+		return () => { disposed = true; };
+	});
+
+	async function finishCalculator() {
+		await saveSetting('calculatorCompleted', true);
+		homeView = 'desktop';
+	}
 
 	const keys = [
 		{ label: 'AC', action: 'clear', tone: 'utility' },
@@ -37,7 +66,7 @@
 		codeInput = (codeInput + digit).slice(-4);
 		if (codeInput === '0000') {
 			resetCode();
-			void goto('/os');
+			void finishCalculator();
 			return;
 		}
 
@@ -117,6 +146,7 @@
 	}
 
 	function handleKeydown(event) {
+		if (homeView !== 'calculator') return;
 		if (event.altKey || event.ctrlKey || event.metaKey) return;
 		const actions = {
 			Enter: 'equals', '=': 'equals', Escape: 'clear', Backspace: 'backspace',
@@ -130,12 +160,17 @@
 </script>
 
 <svelte:head>
-	<title>Calculator</title>
-	<meta name="description" content="A simple calculator." />
+	{#if homeView === 'calculator'}
+		<title>Calculator</title>
+		<meta name="description" content="A simple calculator." />
+	{/if}
 </svelte:head>
 
 <svelte:window onkeydown={handleKeydown} />
 
+{#if homeView === 'desktop'}
+	<Desktop />
+{:else if homeView === 'calculator'}
 <div class="calculator-page">
 	<section class="calculator" aria-label="Calculator">
 		<div class="calculator-top">Calculator</div>
@@ -154,8 +189,16 @@
 		</div>
 	</section>
 </div>
+{:else}
+	<div class="loading-page" aria-label="Loading"></div>
+{/if}
 
 <style>
+	.loading-page {
+		position: fixed;
+		inset: 0;
+		background: #eff1f4;
+	}
 	.calculator-page {
 		position: fixed;
 		inset: 0;
