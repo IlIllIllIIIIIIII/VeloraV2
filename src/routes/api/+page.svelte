@@ -14,6 +14,7 @@ autoSW:    true loads on its own, false waits for a click first
 
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
+	import { registerProxyWorker } from '$lib/lethe/serviceworker.js';
 	import { loadScriptsSequential } from '$lib/lethe/loader';
 	import { createConnection, setCar } from '$lib/lethe/car';
 	import { createScramjetController } from '$lib/lethe/poly';
@@ -34,6 +35,7 @@ autoSW:    true loads on its own, false waits for a click first
 	const api = '/api?url={}&type={}&transport={}&wisp={}&notif={}&autoSW={}';
 	const params = [];
 	let ready = $state(false);
+	let loadError = $state('');
 	let showButton = $state(false);
 	let iframeEl;
 	let polygon;
@@ -68,23 +70,29 @@ autoSW:    true loads on its own, false waits for a click first
 	});
 
 	async function start() {
+		loadError = '';
+		try { await startProxy(); }
+		catch (error) { loadError = error instanceof Error ? error.message : 'Could not start the proxy.'; showButton = true; }
+	}
+	async function startProxy() {
 		showButton = false;
 		try {
 			if (navigator.serviceWorker) {
 				polygon.init();
-				await navigator.serviceWorker.register('/servy.js');
+				await registerProxyWorker();
 			} else {
-				console.warn('Service workers not supported');
+				throw new Error('The proxy could not start. Open Velora directly and try again.');
 			}
 		} catch (e) {
 			console.error('Failed to initialize SJ:', e);
+			throw e;
 		}
 		connection = createConnection();
 		if (['libcurl', 'libcurlRaw', 'epoxy'].includes(apiTransport)) car = apiTransport;
 		await setCar(connection, car, apiWisp);
 
 		ready = true;
-		handleSubmit(apiUrl, apiType);
+		await handleSubmit(apiUrl, apiType);
 	}
 
 	async function handleSubmit(url, type) {
@@ -113,6 +121,13 @@ autoSW:    true loads on its own, false waits for a click first
 		}
 	});
 </script>
+
+{#if loadError}
+	<div role="alert" style="position:fixed;inset:16px 16px auto;z-index:10000;padding:16px;border-radius:8px;background:#242526;color:#eee;font:14px system-ui">
+		{loadError} <a href="/os" target="_blank" rel="noopener noreferrer" style="color:#e4d5b9">Open Velora directly ↗</a>
+	</div>
+{/if}
+
 
 <iframe
 	allow="fullscreen; autoplay; picture-in-picture"

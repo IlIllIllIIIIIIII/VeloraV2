@@ -22,6 +22,7 @@
 		isTabDragging
 	} from '$lib/stores/index.js';
 	import { onMount, tick } from 'svelte';
+	import { registerProxyWorker } from '$lib/lethe/serviceworker.js';
 	import { loadScript, loadScriptsSequential } from '$lib/lethe/loader';
 	import { search } from '$lib/lethe/search';
 	import { createConnection, setCar } from '$lib/lethe/car';
@@ -166,7 +167,7 @@
 	}
 
 	async function navigateTo(rawQuery) {
-		registerSW();
+		await registerSW();
 		if (!ready || !activeFrame) {
 			return;
 		}
@@ -368,19 +369,10 @@
 		saveSetting('popupInterceptor', popupInterceptor);
 		saveSetting('LastPopupIntState', LastPopupIntState);
 	});
-	function registerSW() {
+	async function registerSW() {
 		inputFocused = false;
-
-		try {
-			if (navigator.serviceWorker) {
-				polygon.init();
-				navigator.serviceWorker.register('/servy.js');
-			} else {
-				console.warn('Service workers not supported');
-			}
-		} catch (error) {
-			console.error('Failed to initialize SJ:', error);
-		}
+		polygon.init();
+		await registerProxyWorker();
 	}
 
 	// Presentation state only. Navigation and proxy controllers above remain shared.
@@ -443,9 +435,9 @@
 			}
 			await navigateTo(target);
 			closePalette();
-		} catch {
+		} catch (error) {
 			query = target;
-			paletteError = 'Could not open this page. Check your connection settings and try again.';
+			paletteError = error instanceof Error ? error.message : 'Could not open this page. Check your connection settings and try again.';
 			inputFocused = true;
 		} finally {
 			paletteBusy = false;

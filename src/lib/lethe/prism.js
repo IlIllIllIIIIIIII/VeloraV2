@@ -1,3 +1,4 @@
+import { registerProxyWorker } from './serviceworker.js';
 import { loadScript } from './loader';
 import { getWispUrl } from './car';
 import { codec } from './codec.js';
@@ -18,29 +19,6 @@ function makeTransport(car, custom) {
 	return new Libcurl({ wisp });
 }
 
-async function registerSW(path = '/servy.js') {
-	const reg = await navigator.serviceWorker.register(path, {
-		type: 'classic',
-		updateViaCache: 'none'
-	});
-	await navigator.serviceWorker.ready;
-	if (reg.active) return reg.active;
-	const sw = reg.installing ?? reg.waiting;
-	if (sw) {
-		await new Promise((resolve) => {
-			if (sw.state === 'activated') return resolve();
-			sw.addEventListener('statechange', function onChange() {
-				if (sw.state === 'activated') {
-					sw.removeEventListener('statechange', onChange);
-					resolve();
-				}
-			});
-		});
-		return reg.active ?? sw;
-	}
-	throw new Error('No service worker found');
-}
-
 export async function createPrismController(car = 'libcurl', customWisp) {
 	if (controller) return controller;
 	await loadScript('/prism/prism.js');
@@ -48,7 +26,7 @@ export async function createPrismController(car = 'libcurl', customWisp) {
 	await loadScript(car === 'epoxy' ? '/prism/libbyworse.js' : '/prism/libby.js');
 	const transport = makeTransport(car, customWisp);
 	await transport.init();
-	const sw = await registerSW('/servy.js');
+	const sw = await registerProxyWorker();
 	const { Controller, config } = window.$scramjetController;
 	config.scramjetPath = '/prism/prism.js';
 	config.injectPath = '/prism/prism.inject.js';
