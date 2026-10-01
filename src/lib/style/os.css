@@ -592,3 +592,14 @@
 		transition: none !important;
 	}
 }
+
+.velora-desktop .desktop-download {
+	font-size: 11px;
+	color: #d4d5d8;
+	text-decoration: none;
+	padding: 6px 8px;
+	border-radius: 6px;
+	transition: background 180ms ease-out, color 180ms ease-out;
+}
+.velora-desktop .desktop-download:hover { background: #ffffff10; color: #e4d5b9; }
+.velora-desktop .desktop-download:focus-visible { outline: 1px solid #e4d5b9; outline-offset: 3px; }

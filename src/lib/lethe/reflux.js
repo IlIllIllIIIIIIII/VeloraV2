@@ -19,15 +19,18 @@ export async function enablePopupInterceptor() {
       let queueName = ${JSON.stringify(newTabQueueName)};
 
       function deliveryTarget() {
-        try {
-          let topWindow = window.top;
-          if (topWindow) {
-            return topWindow;
+        // Stay inside Velora when an external page (or local HTML file) embeds it.
+        let target = window;
+        while (target.parent && target.parent !== target) {
+          try {
+            let parentWindow = target.parent;
+            void parentWindow.document;
+            target = parentWindow;
+          } catch (error) {
+            break;
           }
-          return window;
-        } catch (error) {
-          return window;
         }
+        return target;
       }
       function isEnabled() {
         try {

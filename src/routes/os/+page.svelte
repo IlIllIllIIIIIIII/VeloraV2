@@ -589,6 +589,7 @@
 			<button class="brand-button" onclick={openChangelogs} aria-label="About Velora"
 				><span class="velora-mark">v</span>Velora</button
 			><span class="desktop-label">Desktop</span>
+			<a href="/download" class="desktop-download">Download</a>
 		</div>
 		<div class="desktop-status">
 			<a href="/slate" class="browser-mode" title="Open browser without desktop windows"
