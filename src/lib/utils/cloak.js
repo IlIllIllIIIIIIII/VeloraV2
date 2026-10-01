@@ -5,7 +5,12 @@ const decoyThing = 'https://www.google.com';
 
 function topWindow() {
 	if (!browser) return null;
-	return window.top ?? window;
+	try {
+		void window.top.document;
+		return window.top ?? window;
+	} catch {
+		return window;
+	}
 }
 
 function siteUrl() {
