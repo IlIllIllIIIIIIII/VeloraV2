@@ -6,6 +6,7 @@
 	import Icon from '$lib/utils/browser/icon.svelte';
 	import { toggleElementFullscreen } from '$lib/utils/browser/fullscreen.js';
 	import { youtubeDirectUrl } from '$lib/utils/browser/youtube.js';
+	import { getGeForceLauncherUrl } from '$lib/utils/browser/geforce.js';
 	let fullscreenError = $state('');
 	let youtubeHelpDismissed = $state(false);
 	import Modal from '$lib/utils/browser/modal.svelte';
@@ -451,15 +452,8 @@
 			await tick();
 		}
 		if (useAppLoader) {
-			const params = new URLSearchParams({
-				url,
-				type: 'prism',
-				transport: 'epoxy',
-				autoSW: 'false'
-			});
-			if (customWisp) params.set('wisp', customWisp);
 			// Load the existing app launcher directly; it handles proxying after the user's click.
-			activeFrame.url = `/api?${params.toString()}`;
+			activeFrame.url = getGeForceLauncherUrl(customWisp, url);
 			activeFrame.displayUrl = url;
 			activeFrame.title = 'GeForce NOW';
 			return;

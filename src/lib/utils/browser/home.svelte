@@ -1,14 +1,16 @@
 <script>
 	import Icon from './icon.svelte';
+	import { GEFORCE_URL } from './geforce.js';
 	let { ready = false, onsearch, onopen } = $props();
 	let launching = $state(false);
 	async function launchGeForce() {
 		if (!ready || !onopen || launching) return;
 		launching = true;
-
-try { await onopen('https://play.geforcenow.com/mall', { useAppLoader: true }); }
-
-		finally { launching = false; }
+		try {
+			await onopen(GEFORCE_URL, { useAppLoader: true });
+		} finally {
+			launching = false;
+		}
 	}
 </script>
 
