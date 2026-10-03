@@ -5,8 +5,10 @@
     import '$lib/style/assets.css';
     import { initTheme } from '$lib/utils/theme.js';
     import { onMount } from 'svelte';
+    import OpeningSplash from '$lib/utils/opening-splash.svelte';
 
     let { children } = $props();
+    let opening = $state(true);
 
     onMount(() => {
         initTheme();
@@ -39,7 +41,9 @@
     <title>Home - Classroom</title>
 </svelte:head>
 
-<main class="site-content">
+<OpeningSplash bind:visible={opening} />
+
+<main class="site-content" data-velora-site inert={opening}>
     {@render children()}
 </main>
 
