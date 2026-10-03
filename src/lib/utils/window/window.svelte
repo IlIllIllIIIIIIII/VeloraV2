@@ -13,6 +13,7 @@
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import { loadSetting } from '$lib/utils/localspace.js';
+	import { DEFAULT_DOCK_SIZE, dockHeight } from '$lib/utils/os/dock.js';
 	import {
 		topZ,
 		windowList,
@@ -191,8 +192,8 @@
 	let tempWidth = 0;
 	let maximizedStat = $state(false);
 	export async function updateTaskbarHeight() {
-		const size = await loadSetting('navbarsize', 24);
-		taskbarHeight = 40 + (Number(size) || 0);
+		const size = await loadSetting('navbarsize', DEFAULT_DOCK_SIZE);
+		taskbarHeight = dockHeight(size);
 		if (mounted) checkBoundaries();
 	}
 	async function fullscreenWindow() {
