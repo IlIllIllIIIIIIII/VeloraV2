@@ -14,6 +14,7 @@
 	import mainBG from '$lib/img/bg/dark-mountains.jpg';
 	import Wallpaper from '$lib/utils/os/wallpaper.svelte';
 	import Icon from '$lib/utils/browser/icon.svelte';
+	import { getGeForceLauncherUrl } from '$lib/utils/browser/geforce.js';
 	import browser from '$lib/img/icons/earthWhite.png';
 	import g from '$lib/img/icons/controller.png';
 	import a from '$lib/img/icons/apps.png';
@@ -90,15 +91,7 @@
 		},
 		{
 			id: 6,
-			url:
-				'/api?' +
-				new URLSearchParams({
-					url: 'https://play.geforcenow.com/mall',
-					type: 'prism',
-					transport: 'epoxy',
-					autoSW: 'false',
-					...(customWisp ? { wisp: customWisp } : {})
-				}),
+			url: getGeForceLauncherUrl(customWisp),
 			name: 'GeForce NOW',
 			icon: sp,
 			height: '76%',
