@@ -13,12 +13,6 @@
 	import { onMount } from 'svelte';
 	import mainBG from '$lib/img/bg/dark-mountains.jpg';
 	import Wallpaper from '$lib/utils/os/wallpaper.svelte';
-	import {
-		DEFAULT_DOCK_SIZE,
-		clampDockSize,
-		restoreDockSize,
-		dockHeight
-	} from '$lib/utils/os/dock.js';
 	import Icon from '$lib/utils/browser/icon.svelte';
 	import { getGeForceLauncherUrl } from '$lib/utils/browser/geforce.js';
 	import browser from '$lib/img/icons/earthWhite.png';
@@ -52,7 +46,7 @@
 	let customWisp = $state('');
 	let fullscreen = $state(false);
 	let hydrated = $state(false);
-	let navSizeMulti = $state(DEFAULT_DOCK_SIZE);
+	let navSizeMulti = $state(24);
 	let temp = 0;
 	let accumY = 0;
 	let dragging = $state(false);
@@ -70,7 +64,7 @@
 	}
 	function dragStart(e) {
 		accumY += e.movementY;
-		navSizeMulti = clampDockSize(temp - accumY * 0.2);
+		navSizeMulti = Math.max(Math.min(temp - accumY * 0.2, 39), 8);
 	}
 	function dragStop(e) {
 		removeEventListener('mousemove', dragStart);
@@ -490,14 +484,14 @@
 		Promise.all([
 			loadSetting('bg', mainBG),
 			loadSetting('bgFit', 'cover'),
-			loadSetting('navbarsize', DEFAULT_DOCK_SIZE),
+			loadSetting('navbarsize', 24),
 			loadSetting('customApps', []),
 			loadSetting('customWisp', '')
 		]).then(([background, fit, size, savedApps, wisp]) => {
 			if (disposed) return;
 			bgURL = background || mainBG;
 			bgFit = fit === 'contain' ? 'contain' : 'cover';
-			navSizeMulti = restoreDockSize(size);
+			navSizeMulti = Math.max(8, Math.min(Number(size) || 24, 39));
 			customApps = Array.isArray(savedApps) ? savedApps : [];
 			customWisp = wisp || '';
 			hydrated = true;
@@ -576,7 +570,7 @@
 	}}
 />
 
-<div class="velora-desktop" class:fullscreen style:--dock-height={`${dockHeight(navSizeMulti)}px`}>
+<div class="velora-desktop" class:fullscreen style:--dock-height={`${40 + navSizeMulti}px`}>
 	<div
 		class="desktop-wallpaper"
 		style:background-image={`url(${JSON.stringify(bgURL)})`}
