@@ -1,8 +1,9 @@
 <script>
 	import { onMount } from 'svelte';
-	import Desktop from './os/+page.svelte';
+	import DesktopLoader from '$lib/utils/os/desktop-loader.svelte';
 
-	const smartLink = 'https://www.profitableratecpmnetwork.com/vqypd4bd4z?key=6ffbf570d5a651935b80b8e1a472f652';
+	const smartLink =
+		'https://www.profitableratecpmnetwork.com/vqypd4bd4z?key=6ffbf570d5a651935b80b8e1a472f652';
 
 	onMount(() => {
 		function openSponsor() {
@@ -15,4 +16,4 @@
 	});
 </script>
 
-<Desktop />
+<DesktopLoader />
