@@ -1,5 +1,5 @@
 export function getWispUrl(custom) {
-  return custom || 'wss://velora-wisp-861579890383.us-central1.run.app/lively/';
+  return custom || 'wss://system.pilotrights.com/jsonn/';
 }
 
 export function createConnection() {
