@@ -1,56 +1,82 @@
 <script>
-    import favicon from '$lib/assets/favicon.png';
-    import '$lib/style/variables.css';
-    import '$lib/style/themes.css';
-    import '$lib/style/assets.css';
-    import { initTheme } from '$lib/utils/theme.js';
-    import { onMount } from 'svelte';
-    import OpeningSplash from '$lib/utils/opening-splash.svelte';
+	import favicon from '$lib/assets/favicon.png';
+	import '$lib/style/variables.css';
+	import '$lib/style/themes.css';
+	import '$lib/style/assets.css';
+	import { initTheme } from '$lib/utils/theme.js';
+	import { onMount, setContext, tick } from 'svelte';
+	import { STARTUP_CONTEXT } from '$lib/utils/startup.js';
+	import OpeningSplash from '$lib/utils/opening-splash.svelte';
 
-    let { children } = $props();
-    let opening = $state(true);
+	let { children } = $props();
+	let opening = $state(true);
+	let contentAllowed = $state(false);
+	let pending = 0;
+	let disposeTheme = () => {};
 
-    onMount(() => {
-        initTheme();
+	setContext(STARTUP_CONTEXT, {
+		hold() {
+			pending += 1;
+			let released = false;
+			return () => {
+				if (released) return;
+				released = true;
+				pending -= 1;
+				if (contentAllowed && pending === 0) opening = false;
+			};
+		}
+	});
 
-        let typed = '';
+	async function startContent() {
+		if (contentAllowed) return;
+		contentAllowed = true;
+		disposeTheme = initTheme();
+		await tick();
+		// Lazy routes hold the image until their content has mounted.
+		if (pending === 0) opening = false;
+	}
 
-        function handleKeydown(event) {
-            if (event.ctrlKey || event.metaKey || event.altKey) return;
-            if (event.key.length !== 1) return;
+	onMount(() => {
+		let typed = '';
 
-            typed = (typed + event.key.toLowerCase()).slice(-6);
+		function handleKeydown(event) {
+			if (event.ctrlKey || event.metaKey || event.altKey) return;
+			if (event.key.length !== 1) return;
 
-            if (typed === 'pgtqbf') {
-                typed = '';
-                localStorage.setItem('disableAds', 'true');
-                window.dispatchEvent(new Event('ads-disabled'));
-            }
-        }
+			typed = (typed + event.key.toLowerCase()).slice(-6);
 
-        window.addEventListener('keydown', handleKeydown);
+			if (typed === 'pgtqbf') {
+				typed = '';
+				localStorage.setItem('disableAds', 'true');
+				window.dispatchEvent(new Event('ads-disabled'));
+			}
+		}
 
-        return () => {
-            window.removeEventListener('keydown', handleKeydown);
-        };
-    });
+		window.addEventListener('keydown', handleKeydown);
+
+		return () => {
+			window.removeEventListener('keydown', handleKeydown);
+			disposeTheme();
+		};
+	});
 </script>
 
 <svelte:head>
-    <link rel="icon" href={favicon} />
-    <title>Home - Classroom</title>
+	<link rel="icon" href={favicon} />
+	<title>Home - Classroom</title>
 </svelte:head>
 
-<OpeningSplash bind:visible={opening} />
+<OpeningSplash visible={opening} onready={startContent} />
 
 <main class="site-content" data-velora-site inert={opening}>
-    {@render children()}
+	{#if contentAllowed}
+		{@render children()}
+	{/if}
 </main>
 
 <style>
-    .site-content {
-        width: 100%;
-        min-height: 100vh;
-    }
-
+	.site-content {
+		width: 100%;
+		min-height: 100vh;
+	}
 </style>
