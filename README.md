@@ -44,8 +44,9 @@ directly. The package must be hosted at the bucket root, not inside a subfolder.
 ## Dependencies and limits
 
 - Web browsing still needs the configured external Wisp WebSocket relay. S3
-  cannot host that relay. The default servers and custom-server settings are
-  unchanged.
+  cannot host that relay. Browser and GeForce NOW use
+  `wss://system.pilotrights.com/jsonn/` by default. A saved custom server still
+  overrides this default.
 - Registering a custom domain through `/api/byod` needs Cloudflare's server
   and credentials; the S3 version explains this rather than submitting to S3.
 - Games and Pyrite are optional assets missing from the current repository
