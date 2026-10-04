@@ -7,7 +7,7 @@
 	import { onMount, setContext, tick } from 'svelte';
 	import { STARTUP_CONTEXT } from '$lib/utils/startup.js';
 	import OpeningSplash from '$lib/utils/opening-splash.svelte';
-
+	let showOpeningSplash = $state(false);
 	let { children } = $props();
 	let opening = $state(true);
 	let contentAllowed = $state(false);
@@ -37,6 +37,12 @@
 	}
 
 	onMount(() => {
+		// The splash belongs to the S3 export only, and only when served from S3.
+		showOpeningSplash =
+			import.meta.env.VITE_VELORA_S3 === '1' &&
+			/\.s3(?:-website)?(?:[.-][a-z0-9-]+)?\.amazonaws\.com$/i.test(window.location.hostname);
+		if (!showOpeningSplash) startContent();
+
 		let typed = '';
 
 		function handleKeydown(event) {
@@ -66,7 +72,9 @@
 	<title>Home - Classroom</title>
 </svelte:head>
 
-<OpeningSplash visible={opening} onready={startContent} />
+{#if showOpeningSplash}
+	<OpeningSplash visible={opening} onready={startContent} />
+{/if}
 
 <main class="site-content" data-velora-site inert={opening}>
 	{#if contentAllowed}
