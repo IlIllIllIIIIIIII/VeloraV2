@@ -6,6 +6,10 @@
 	let error = $state('');
 
 	async function addDomain() {
+		if (import.meta.env.VITE_VELORA_S3 === '1') {
+			error = 'Domain registration needs the Cloudflare-hosted version of Velora. This S3 package cannot register domains.';
+			return;
+		}
 		loading = true;
 		error = '';
 		result = null;
