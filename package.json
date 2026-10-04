@@ -7,6 +7,7 @@
 		"start": "node index.js",
 		"dev": "vite dev",
 		"build": "wrangler types && vite build",
+		"export:s3": "node scripts/export-s3.mjs",
 		"changelog": "node scripts/changelog.js",
 		"preview": "npm run build && wrangler dev",
 		"prepare": "svelte-kit sync || echo ''",

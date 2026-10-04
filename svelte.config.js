@@ -1,4 +1,5 @@
 import adapter from "@sveltejs/adapter-cloudflare";
+import staticPackage from "./scripts/s3-adapter.mjs";
 import { relative, sep } from "node:path";
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -14,7 +15,7 @@ const config = {
 			return isExternalLibrary ? undefined : true;
 		}
 	},
-	kit: { adapter: adapter() }
+	kit: { adapter: process.env.VELORA_S3_EXPORT === '1' ? staticPackage() : adapter() }
 };
 
 export default config;
