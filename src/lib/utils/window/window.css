@@ -7,9 +7,9 @@
 	padding: 0;
 	min-width: 0;
 	min-height: 0;
-	background: rgba(23, 30, 27, 0.72);
+	background: rgba(26, 28, 30, 0.55);
 	border: 1px solid rgba(255, 255, 255, 0.12);
-	border-radius: 14px;
+	border-radius: 11px;
 	box-shadow: 0 16px 45px rgba(0, 0, 0, 0.22);
 	transform-origin: center 70%;
 	transition-property: width, height, top, left, border-color, box-shadow;
@@ -31,9 +31,9 @@
 	min-width: 0;
 	width: 100%;
 	color: #bebfbd;
-	background: rgba(29, 38, 33, 0.94);
+	background: rgba(33, 35, 37, 0.92);
 	border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-	border-radius: 13px 13px 0 0;
+	border-radius: 10px 10px 0 0;
 	backdrop-filter: blur(24px);
 	-webkit-backdrop-filter: blur(24px);
 	cursor: default;
@@ -89,8 +89,8 @@
 	height: 28px;
 	padding: 0;
 	border: 0;
-	border-radius: 7px;
-	background: rgba(255, 255, 255, 0.035);
+	border-radius: 5px;
+	background: transparent;
 	color: inherit;
 	cursor: pointer;
 	transition: background 180ms ease-out;
@@ -121,14 +121,14 @@
 	margin: 0;
 	padding: 0;
 	border: 0;
-	border-radius: 0 0 13px 13px;
+	border-radius: 0 0 10px 10px;
 	background: #202224;
 }
 .window .windowCover {
 	position: absolute;
 	inset: 40px 0 0;
 	background: rgba(20, 22, 24, 0.09);
-	border-radius: 0 0 13px 13px;
+	border-radius: 0 0 10px 10px;
 }
 .window .windowCover.active {
 	display: none;
@@ -199,7 +199,7 @@
 	box-sizing: border-box;
 	background: rgba(212, 194, 157, 0.1);
 	border: 1px solid rgba(225, 211, 183, 0.32);
-	border-radius: 14px;
+	border-radius: 11px;
 	pointer-events: none;
 	backdrop-filter: blur(12px);
 	-webkit-backdrop-filter: blur(12px);
@@ -266,7 +266,7 @@
 .window-fullscreen-error button {
 	float: right;
 	border: 0;
-	background: rgba(255, 255, 255, 0.035);
+	background: transparent;
 	color: inherit;
 	cursor: pointer;
 }

@@ -13,8 +13,6 @@
 	import { onMount } from 'svelte';
 	import mainBG from '$lib/img/bg/dark-mountains.jpg';
 	import Wallpaper from '$lib/utils/os/wallpaper.svelte';
-	import WorkspaceHome from '$lib/utils/os/workspace-home.svelte';
-	import CommandPalette from '$lib/utils/os/command-palette.svelte';
 	import Icon from '$lib/utils/browser/icon.svelte';
 	import { getGeForceLauncherUrl } from '$lib/utils/browser/geforce.js';
 	import browser from '$lib/img/icons/earthWhite.png';
@@ -44,6 +42,7 @@
 	let bgFit = $state('cover');
 	let wallpaperOpen = $state(false);
 	let launcherOpen = $state(false);
+	let launcherSearch = $state('');
 	let customWisp = $state('');
 	let fullscreen = $state(false);
 	let hydrated = $state(false);
@@ -563,10 +562,6 @@
 		launcherOpen = false;
 	}}
 	onkeydown={(e) => {
-		if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-			e.preventDefault();
-			launcherOpen = !launcherOpen;
-		}
 		if (e.key === 'Escape') {
 			closeAddApp();
 			closeMenu();
@@ -590,15 +585,6 @@
 			<a href="/download" class="desktop-download">Download</a>
 		</div>
 		<div class="desktop-status">
-			<button
-				class="menubar-icon"
-				aria-label="Search apps and actions"
-				title="Search apps and actions (Cmd/Ctrl+K)"
-				onclick={(event) => {
-					event.stopPropagation();
-					launcherOpen = true;
-				}}><Icon name="search" size={15} /></button
-			>
 			<a href="/slate" class="browser-mode" title="Open browser without desktop windows"
 				><Icon name="globe" size={14} /><span>Browser mode</span></a
 			>
@@ -617,44 +603,83 @@
 		aria-label="Velora desktop"
 		oncontextmenu={(e) => openMenu(e, 'navBar')}
 	>
-		<WorkspaceHome
-			{apps}
-			windows={$windowList}
-			ready={hydrated}
-			date={dateString}
-			time={timeString}
-			onlaunch={launchApp}
-			onappmenu={(event, app) =>
-				openMenu(
-					event,
-					'apps',
-					app.id,
-					app.url,
-					app.name,
-					app.height,
-					app.width,
-					app.top,
-					app.left
-				)}
-			onfocus={focusWindow}
-			onpersonalize={personalize}
-			onadd={openAddApp}
-			onsearch={(event) => {
-				event.stopPropagation();
-				launcherOpen = true;
-			}}
-		/>
+		<div class="desktop-shortcuts" aria-label="Desktop apps">
+			{#each apps.filter((app) => [1, 6, 2, 4].includes(app.id)) as app (app.id)}
+				<button
+					class="desktop-shortcut"
+					onclick={() => launchApp(app)}
+					disabled={!hydrated}
+					oncontextmenu={(e) =>
+						openMenu(
+							e,
+							'apps',
+							app.id,
+							app.url,
+							app.name,
+							app.height,
+							app.width,
+							app.top,
+							app.left
+						)}
+				>
+					<span class="shortcut-icon"><img src={app.icon} alt="" /></span><span>{app.name}</span>
+				</button>
+			{/each}
+		</div>
+		<div class="desktop-clock" aria-hidden="true">
+			<p>{dateString}</p>
+			<span>{timeString}</span>
+		</div>
+		<div class="desktop-signature">
+			<span>VELORA</span>
+			<p>Your space, your way.</p>
+		</div>
+		<button class="personalize-button" onclick={personalize}
+			><Icon name="settings" size={15} /><span>Change wallpaper</span></button
+		>
 	</main>
+
 	{#if launcherOpen}
-		<CommandPalette
-			{apps}
-			ready={hydrated}
-			onlaunch={launchApp}
-			onclose={() => (launcherOpen = false)}
-			onpersonalize={personalize}
-			onadd={openAddApp}
-			onfullscreen={toggleFullscreen}
-		/>
+		<section class="app-launcher" aria-label="App launcher" onclick={(e) => e.stopPropagation()}>
+			<div class="launcher-heading">
+				<h2>Your apps</h2>
+				<button
+					class="menubar-icon"
+					onclick={() => {
+						launcherOpen = false;
+					}}
+					aria-label="Close app launcher"><Icon name="close" size={16} /></button
+				>
+			</div>
+			<label class="launcher-search"
+				><Icon name="search" size={17} /><input
+					placeholder="Find an app"
+					aria-label="Find an app"
+					bind:value={launcherSearch}
+					{@attach (node) => {
+						node.focus();
+					}}
+				/></label
+			>
+			<div class="launcher-grid">
+				{#each apps.filter((app) => app.name
+						.toLowerCase()
+						.includes(launcherSearch.toLowerCase())) as app (app.id)}
+					<button onclick={() => launchApp(app)}
+						><span class="shortcut-icon"><img src={app.icon} alt="" /></span><span>{app.name}</span
+						></button
+					>
+				{:else}<p class="no-apps">No apps found.</p>{/each}
+			</div>
+			<div class="launcher-footer">
+				<button
+					onclick={() => {
+						launcherOpen = false;
+						openAddApp();
+					}}><Icon name="plus" size={15} />Add app</button
+				><button onclick={personalize}><Icon name="settings" size={15} />Personalize</button>
+			</div>
+		</section>
 	{/if}
 	{#if wallpaperOpen}
 		<Wallpaper
@@ -867,6 +892,7 @@
 			aria-expanded={launcherOpen}
 			onclick={(e) => {
 				e.stopPropagation();
+				launcherSearch = '';
 				launcherOpen = !launcherOpen;
 			}}><Icon name="apps" size={24} /></button
 		>
