@@ -8,6 +8,7 @@
 	import { STARTUP_CONTEXT } from '$lib/utils/startup.js';
 	import OpeningSplash from '$lib/utils/opening-splash.svelte';
 
+	const showOpeningSplash = import.meta.env.VITE_VELORA_S3 === '1';
 	let { children } = $props();
 	let opening = $state(true);
 	let contentAllowed = $state(false);
@@ -37,6 +38,9 @@
 	}
 
 	onMount(() => {
+		// The opening PNG belongs to the S3 bundle; Cloudflare starts the app directly.
+		if (!showOpeningSplash) startContent();
+
 		let typed = '';
 
 		function handleKeydown(event) {
@@ -66,7 +70,9 @@
 	<title>Home - Classroom</title>
 </svelte:head>
 
-<OpeningSplash visible={opening} onready={startContent} />
+{#if showOpeningSplash}
+	<OpeningSplash visible={opening} onready={startContent} />
+{/if}
 
 <main class="site-content" data-velora-site inert={opening}>
 	{#if contentAllowed}

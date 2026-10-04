@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
-	import splash from '$lib/assets/learning-hub-splash.png';
 
+	const splash = '/learning-hub-splash.png';
 	let { visible = true, onready } = $props();
 	let image = $state();
 
