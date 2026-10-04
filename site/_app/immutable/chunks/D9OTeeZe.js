@@ -1,0 +1,1 @@
+import{aD as t,bk as f,_ as e,bi as c}from"./Cz-pol0c.js";function u(n){e===null&&t(),f(()=>{const o=c(n);if(typeof o=="function")return o})}function i(n){e===null&&t(),u(()=>()=>c(n))}export{u as a,i as o};

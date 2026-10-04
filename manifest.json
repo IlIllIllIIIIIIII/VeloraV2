@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "routes": [
+    "/",
+    "/api",
+    "/apps",
+    "/books",
+    "/byod",
+    "/changelog",
+    "/contrast",
+    "/download",
+    "/lethe",
+    "/os",
+    "/settings",
+    "/slate",
+    "/test"
+  ],
+  "missingAssets": [
+    "books/gmes.json",
+    "pyrite/index.html"
+  ],
+  "serverOnly": [
+    "/api/byod"
+  ],
+  "proxyWorker": "/servy.js",
+  "requires": [
+    "HTTPS",
+    "A reachable Wisp server"
+  ]
+}
