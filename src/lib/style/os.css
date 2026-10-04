@@ -67,7 +67,7 @@
 	padding: 0 18px;
 	position: relative;
 	z-index: 10000;
-	background: rgba(17, 20, 25, 0.62);
+	background: rgba(17, 24, 21, 0.74);
 	backdrop-filter: blur(22px);
 	border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 	user-select: none;
@@ -110,6 +110,7 @@
 	font-size: 11px;
 }
 .velora-desktop .desktop-status time {
+	white-space: nowrap;
 	font-size: 11px;
 	font-variant-numeric: tabular-nums;
 }
@@ -129,110 +130,6 @@
 .velora-desktop .desktop-workspace {
 	position: absolute;
 	inset: 40px 0 calc(var(--dock-height) + 32px);
-}
-.velora-desktop .desktop-shortcuts {
-	position: absolute;
-	top: 24px;
-	left: 24px;
-	display: grid;
-	grid-template-columns: repeat(2, 86px);
-	gap: 18px 10px;
-}
-.velora-desktop .desktop-shortcut {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 9px;
-	border: 1px solid transparent;
-	background: transparent;
-	padding: 10px 4px;
-	border-radius: 10px;
-	font-size: 11px;
-	text-shadow: 0 1px 6px #111;
-	transition:
-		background 180ms ease-out,
-		transform 180ms ease-out;
-}
-.velora-desktop .desktop-shortcut:hover {
-	background: rgba(255, 255, 255, 0.09);
-	border-color: rgba(255, 255, 255, 0.08);
-	transform: translateY(-2px);
-}
-.velora-desktop .shortcut-icon {
-	width: 49px;
-	height: 49px;
-	border-radius: 13px;
-	display: grid;
-	place-items: center;
-	background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05));
-	border: 1px solid rgba(255, 255, 255, 0.13);
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-	backdrop-filter: blur(18px);
-}
-.velora-desktop .shortcut-icon img {
-	width: 29px;
-	height: 29px;
-	object-fit: contain;
-}
-.velora-desktop .desktop-clock {
-	position: absolute;
-	top: 9%;
-	left: 50%;
-	transform: translateX(-50%);
-	text-align: center;
-	pointer-events: none;
-	white-space: nowrap;
-	color: rgba(255, 255, 255, 0.91);
-	text-shadow: 0 2px 24px rgba(0, 0, 0, 0.18);
-}
-.velora-desktop .desktop-clock p {
-	margin: 0 0 9px;
-	font-size: 13px;
-	font-weight: 400;
-	letter-spacing: 0.4px;
-}
-.velora-desktop .desktop-clock > span {
-	font-size: clamp(44px, 5.8vw, 86px);
-	font-weight: 250;
-	line-height: 1.1;
-	letter-spacing: -3px;
-	font-variant-numeric: tabular-nums;
-}
-.velora-desktop .desktop-signature {
-	position: absolute;
-	bottom: 25px;
-	left: 32px;
-	text-shadow: 0 2px 10px #161a2099;
-}
-.velora-desktop .desktop-signature > span {
-	font-size: 10px;
-	font-weight: 500;
-	letter-spacing: 3px;
-	color: #dfd6c5;
-}
-.velora-desktop .desktop-signature p {
-	font-size: 20px;
-	font-weight: 300;
-	margin: 9px 0 0;
-	letter-spacing: -0.5px;
-}
-.velora-desktop .personalize-button {
-	position: absolute;
-	right: 28px;
-	bottom: 28px;
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	padding: 10px 13px;
-	background: rgba(24, 28, 35, 0.46);
-	backdrop-filter: blur(20px);
-	border: 1px solid var(--os-border);
-	border-radius: 9px;
-	font-size: 11px;
-	transition: background 180ms ease-out;
-}
-.velora-desktop .personalize-button:hover {
-	background: rgba(50, 54, 61, 0.75);
 }
 .velora-desktop .desktop-dock {
 	position: absolute;
@@ -326,97 +223,6 @@
 	width: 1px;
 	flex-shrink: 0;
 	background: rgba(255, 255, 255, 0.12);
-}
-.velora-desktop .app-launcher {
-	position: absolute;
-	bottom: calc(var(--dock-height) + 26px);
-	left: 50%;
-	transform: translateX(-50%);
-	width: min(480px, calc(100% - 32px));
-	max-height: calc(100% - var(--dock-height) - 85px);
-	overflow: auto;
-	z-index: 10002;
-	padding: 23px;
-	background: rgba(30, 33, 39, 0.94);
-	backdrop-filter: blur(32px);
-	border: 1px solid var(--os-border);
-	border-radius: 17px;
-	box-shadow: 0 20px 65px rgba(0, 0, 0, 0.35);
-	animation: desktop-panel-in 200ms ease-out;
-}
-.velora-desktop .launcher-heading {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 17px;
-}
-.velora-desktop .launcher-heading h2 {
-	font-size: 17px;
-	font-weight: 500;
-	margin: 0;
-	letter-spacing: -0.4px;
-}
-.velora-desktop .launcher-search {
-	display: flex;
-	align-items: center;
-	gap: 9px;
-	border: 1px solid var(--os-border);
-	border-radius: 8px;
-	background: rgba(0, 0, 0, 0.15);
-	padding: 9px 12px;
-	color: #a4a8b0;
-}
-.velora-desktop .launcher-search input {
-	min-width: 0;
-	width: 100%;
-	color: white;
-	background: transparent;
-	border: 0;
-	outline: 0;
-}
-.velora-desktop .launcher-search:focus-within {
-	border-color: var(--os-accent);
-}
-.velora-desktop .launcher-grid {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 8px;
-	padding: 22px 0;
-}
-.velora-desktop .launcher-grid button {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 9px;
-	border: 0;
-	border-radius: 8px;
-	padding: 10px 0;
-	background: transparent;
-	font-size: 11px;
-}
-.velora-desktop .launcher-grid button:hover {
-	background: rgba(255, 255, 255, 0.06);
-}
-.velora-desktop .no-apps {
-	grid-column: 1/-1;
-	color: var(--os-muted);
-	text-align: center;
-}
-.velora-desktop .launcher-footer {
-	display: flex;
-	justify-content: space-between;
-	border-top: 1px solid var(--os-border);
-	padding-top: 15px;
-}
-.velora-desktop .launcher-footer button {
-	display: flex;
-	align-items: center;
-	gap: 7px;
-	padding: 6px;
-	background: none;
-	border: 0;
-	color: #d4cfbf;
-	font-size: 12px;
 }
 .velora-desktop .contextMenu,
 .velora-desktop .previewPanel {
@@ -547,30 +353,6 @@
 	.velora-desktop .browser-mode span {
 		display: none;
 	}
-	.velora-desktop .desktop-shortcuts {
-		top: 180px;
-		left: 20px;
-		right: 20px;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 4px;
-	}
-	.velora-desktop .desktop-clock {
-		top: 38px;
-	}
-	.velora-desktop .desktop-clock > span {
-		font-size: 64px;
-	}
-	.velora-desktop .desktop-signature {
-		left: 22px;
-		bottom: 76px;
-	}
-	.velora-desktop .desktop-signature p {
-		font-size: 17px;
-	}
-	.velora-desktop .personalize-button {
-		right: 20px;
-		bottom: 18px;
-	}
 	.velora-desktop .desktop-dock {
 		gap: 3px;
 		padding: 6px;
@@ -579,9 +361,6 @@
 	.velora-desktop .dock-personalize,
 	.velora-desktop .dock-divider:last-of-type {
 		display: none;
-	}
-	.velora-desktop .launcher-grid {
-		grid-template-columns: repeat(3, 1fr);
 	}
 }
 @media (prefers-reduced-motion: reduce) {
@@ -599,7 +378,27 @@
 	text-decoration: none;
 	padding: 6px 8px;
 	border-radius: 6px;
-	transition: background 180ms ease-out, color 180ms ease-out;
+	transition:
+		background 180ms ease-out,
+		color 180ms ease-out;
 }
-.velora-desktop .desktop-download:hover { background: #ffffff10; color: #e4d5b9; }
-.velora-desktop .desktop-download:focus-visible { outline: 1px solid #e4d5b9; outline-offset: 3px; }
+.velora-desktop .desktop-download:hover {
+	background: #ffffff10;
+	color: #e4d5b9;
+}
+.velora-desktop .desktop-download:focus-visible {
+	outline: 1px solid #e4d5b9;
+	outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+	.velora-desktop .desktop-identity {
+		gap: 8px;
+	}
+	.velora-desktop .desktop-label {
+		display: none;
+	}
+	.velora-desktop .desktop-status {
+		gap: 8px;
+	}
+}
